@@ -6,5 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="D:/escuela/3 semestre(ayuda)/ED/libreriasArbyGraf/3- Grafos Enlazados/libs/LinkedGraph_1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
