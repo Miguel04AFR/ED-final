@@ -10,7 +10,7 @@ import java.awt.Color;
 
 public class Carrera extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;//ahoi
 	private JPanel contentPane;
 
 	/**
