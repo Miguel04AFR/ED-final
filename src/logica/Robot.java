@@ -2,10 +2,12 @@ package logica;
 
 import java.util.Iterator;
 
+import cu.edu.cujae.ceis.graph.edge.Edge;
+import cu.edu.cujae.ceis.graph.edge.WeightedEdge;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedEdgeDirectedGraph;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import logica.Posicion;
-
+import cu.edu.cujae.ceis.graph.edge.*;
 public class Robot {
 	private int x;
 	private int y;
@@ -42,7 +44,7 @@ public class Robot {
 		this.tamano = tamano;
 	}
 	
-	public Vertex VertexSituado(ILinkedWeightedEdgeDirectedGraph grafo) {
+	public Vertex VertexSituado(ILinkedWeightedEdgeDirectedGraph grafo) {//metodo para situar al robot
 		Iterator<Vertex> i=grafo.getVerticesList().iterator();
 		boolean encontrado=false;
 		Vertex v = null;
@@ -56,12 +58,48 @@ public class Robot {
 		
 	}
 	
-	public Vertex LLegarMeta(ILinkedWeightedEdgeDirectedGraph grafo, int meta) {
-		Vertex posRobot= VertexSituado(grafo);
-		Iterator<Vertex> i= posRobot.getAdjacents().iterator();
+	public boolean VerificarMeta(Vertex a,ILinkedWeightedEdgeDirectedGraph grafo,int meta) {//metodo para verificar si ese nodo puede llegar a la meta
+		if(a.equals(grafo.getVerticesList().get(meta))) {	
+			return true;
+		}
+		Iterator<Edge> i= a.getEdgeList().iterator();
 		while(i.hasNext()) {
+			Vertex v=i.next().getVertex();
+		
+		if(VerificarMeta(v, grafo, meta))
+		return true;		
+		}
+		
+		return false;
+	}
+	
+	public Vertex LLegarMeta(ILinkedWeightedEdgeDirectedGraph grafo, int meta) {//metodo para que el robot llegue a la meta de la manera mas optima
+		Vertex posRobot= VertexSituado(grafo);
+		Iterator<Edge> i= posRobot.getEdgeList().iterator();
+		Vertex vp=i.next().getVertex();
+		boolean primeroPuede=false;
+		if(VerificarMeta(vp,grafo,meta)) {
+			primeroPuede=true;
+		}
+		else {
+			while(i.hasNext() && !primeroPuede) {
+				if(VerificarMeta(i.next().getVertex(),grafo,meta)){
+					primeroPuede=true;
+				}
+			}
+		}
+			
+		
+		while(i.hasNext() && primeroPuede) {
+			Vertex v=i.next().getVertex();
+			if(VerificarMeta(v,grafo,meta)) {
+				
+			}
+			
+			
 			
 		}
+		
 		
 		
 		
@@ -70,5 +108,36 @@ public class Robot {
 		return null;
 	}
 	
+	public int tamano(Vertex a,ILinkedWeightedEdgeDirectedGraph grafo, int meta,int contAc) {
+		if(a.equals(grafo.getVerticesList().get(meta))) {	
+			return contAc;
+		}
+		
+		  int distanciaMinima = 1000;
+		  
+			
+		Iterator<Edge> ia=a.getEdgeList().iterator();
+		boolean tieneAristas = false;
+				
+		while(ia.hasNext()) {
+			tieneAristas=true;
+			WeightedEdge we=((WeightedEdge)ia.next());
+			Vertex v=we.getVertex();
+			int cont=((Tramo)we.getWeight()).getKm() + contAc;
+			
 
+	        int distancia = tamano(v, grafo, meta, cont);
+	        
+	        if(distancia<distanciaMinima) {
+	        	distanciaMinima = distancia;
+		}	
+		}
+		
+		if(!tieneAristas) {
+			return -1;
+		}
+	
+		return distanciaMinima;
+	}
 }
+
