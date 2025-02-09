@@ -6,13 +6,16 @@ import cu.edu.cujae.ceis.graph.LinkedGraph;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedNotDirectedGraph;
 import interfaz.Carrera;
 import logica.*;
+import cu.edu.cujae.ceis.graph.interfaces.*;
 
 public class main {
 
 	public static void main(String[] args) {
-		ILinkedNotDirectedGraph grafo = new LinkedGraph();
+		ILinkedWeightedEdgeDirectedGraph grafo = new LinkedGraph();
 		Robot robot = new Robot(100,100,150);
 		Simulacion simu=new Simulacion(grafo,robot);
+		
+		
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

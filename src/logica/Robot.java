@@ -1,5 +1,11 @@
 package logica;
 
+import java.util.Iterator;
+
+import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedEdgeDirectedGraph;
+import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import logica.Posicion;
+
 public class Robot {
 	private int x;
 	private int y;
@@ -36,6 +42,33 @@ public class Robot {
 		this.tamano = tamano;
 	}
 	
+	public Vertex VertexSituado(ILinkedWeightedEdgeDirectedGraph grafo) {
+		Iterator<Vertex> i=grafo.getVerticesList().iterator();
+		boolean encontrado=false;
+		Vertex v = null;
+		while(i.hasNext() && !encontrado) {
+			v=i.next();
+			if(((Posicion)v.getInfo()).getRobot()){
+				encontrado=true;
+			}
+		}
+		return v;
+		
+	}
+	
+	public Vertex LLegarMeta(ILinkedWeightedEdgeDirectedGraph grafo, int meta) {
+		Vertex posRobot= VertexSituado(grafo);
+		Iterator<Vertex> i= posRobot.getAdjacents().iterator();
+		while(i.hasNext()) {
+			
+		}
+		
+		
+		
+		
+		
+		return null;
+	}
 	
 
 }
