@@ -75,16 +75,19 @@ public class Robot {
 	
 	public Vertex LLegarMeta(ILinkedWeightedEdgeDirectedGraph grafo, int meta) {//metodo para que el robot llegue a la meta de la manera mas optima
 		Vertex posRobot= VertexSituado(grafo);
+		int minimo=2000;
 		Iterator<Edge> i= posRobot.getEdgeList().iterator();
 		Vertex vp=i.next().getVertex();
 		boolean primeroPuede=false;
 		if(VerificarMeta(vp,grafo,meta)) {
 			primeroPuede=true;
+			minimo=tamano(vp,grafo,meta,0);
 		}
 		else {
 			while(i.hasNext() && !primeroPuede) {
 				if(VerificarMeta(i.next().getVertex(),grafo,meta)){
 					primeroPuede=true;
+					minimo=tamano(vp,grafo,meta,0);
 				}
 			}
 		}
@@ -92,20 +95,18 @@ public class Robot {
 		
 		while(i.hasNext() && primeroPuede) {
 			Vertex v=i.next().getVertex();
-			if(VerificarMeta(v,grafo,meta)) {
+			if(tamano(v,grafo,meta,0)<minimo) {
+			minimo=tamano(v,grafo,meta,0);
+			vp=v;
 				
 			}
 			
-			
+			if(!primeroPuede)
+				vp=null;
 			
 		}
 		
-		
-		
-		
-		
-		
-		return null;
+		return vp;
 	}
 	
 	public int tamano(Vertex a,ILinkedWeightedEdgeDirectedGraph grafo, int meta,int contAc) {
@@ -133,7 +134,7 @@ public class Robot {
 		}	
 		}
 		
-		if(!tieneAristas) {
+		if(!tieneAristas) {// Si el vértice no tiene aristas salientes y no es la meta
 			return -1;
 		}
 	
