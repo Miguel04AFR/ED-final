@@ -35,7 +35,7 @@ public class Carrera extends JFrame {
 	        
 	        ComponenteRobot componenteRobot = new ComponenteRobot();
 	        componenteRobot.setForeground(new Color(0, 64, 0));
-	        componenteRobot.setBounds(127, 102, 129, 219);
+	        componenteRobot.setBounds(50, 33, 382, 435);
 	        contentPane.add(componenteRobot);
 
 	        // Fuerza el repintado del componente
