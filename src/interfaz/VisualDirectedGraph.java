@@ -29,7 +29,7 @@ public class VisualDirectedGraph extends JPanel {
 
 	private static final long serialVersionUID = 4844448980727237308L;
 	private ILinkedDirectedGraph originalGraph;
-	private LinkedList<VisualVertex> verticesList;					
+	private LinkedList<Vertex> verticesList;					
 	private int vertexWidth  = 30;
 	private int vertexHeight = 30;
 
@@ -43,7 +43,7 @@ public class VisualDirectedGraph extends JPanel {
 
 	public VisualDirectedGraph(int centerX, int centerY) {
 		super();
-		verticesList = new LinkedList<VisualVertex>();
+		verticesList = new LinkedList<Vertex>();
 		this.setLayout(null);
 		setForeground(Color.gray);
 		this.centerX = centerX;
@@ -55,10 +55,10 @@ public class VisualDirectedGraph extends JPanel {
 		super.paint(g);			
 		
 		try {
-			Iterator<VisualVertex> iter = verticesList.iterator();
+			Iterator<Vertex> iter = verticesList.iterator();
 	
 			while(iter.hasNext()) {
-				VisualVertex current = iter.next();
+				Vertex current = iter.next();
 				drawVertexEdges(g, current);		
 			}		
 	
@@ -108,14 +108,14 @@ public class VisualDirectedGraph extends JPanel {
 	}
 
 	private void autoPosVertices(int radio) {
-		Iterator<VisualVertex> iter = verticesList.iterator();
+		Iterator<Vertex> iter = verticesList.iterator();
 		int x;
 		int y;
 		int step = 0;
 		double period = 2*Math.PI/verticesList.size();
 
 		while(iter.hasNext()) {
-			VisualVertex current = iter.next();
+			Vertex current = iter.next();
 			x = centerX + (int) (radio * Math.sin(step*period));
 			y = centerY + (int) (radio * Math.cos(step*period));				
 			step += 1;
@@ -124,7 +124,7 @@ public class VisualDirectedGraph extends JPanel {
 		}		
 	}
 
-	private void addVertexToContainer(VisualVertex vertex) {
+	private void addVertexToContainer(Vertex vertex) {
 		add(vertex.getLabel());
 		vertex.getLabel().setBounds(0, 0, vertexWidth, vertexHeight);
 	}
@@ -134,12 +134,12 @@ public class VisualDirectedGraph extends JPanel {
 	 * @param g
 	 * @param vertex
 	 */
-	private void drawVertexEdges(Graphics g, VisualVertex vertex) {	
-		VisualVertex dest;
+	private void drawVertexEdges(Graphics g, Vertex vertex) {	
+		Vertex dest;
 		LinkedList<Vertex> adjacents = vertex.getAdjacents();
 
 		for(int i=0; i<adjacents.size(); i++) {
-			dest = (VisualVertex) adjacents.get(i);
+			dest = (Vertex) adjacents.get(i);
 
 			if(!vertex.equals(dest))
 				line(g, vertex, dest);
@@ -150,7 +150,7 @@ public class VisualDirectedGraph extends JPanel {
 		}
 	}
 
-	private void arc(Graphics g, VisualVertex vertex) {
+	private void arc(Graphics g, Vertex vertex) {
 
 		g.drawArc(vertex.getX()-vertex.getWidth()/2, 
 				vertex.getY()-vertex.getHeight()/2, 
@@ -184,7 +184,7 @@ public class VisualDirectedGraph extends JPanel {
 		g2.fillArc(x2-size/2, y2-size/2, size, size, 0, 360);
 	}
 
-	private void line(Graphics g, VisualVertex v1, VisualVertex v2) {
+	private void line(Graphics g, Vertex v1, Vertex v2) {
 		int x1 = v1.getX() ;
 		int y1 = v1.getY();
 		int x2 = v2.getX() ;
@@ -220,16 +220,16 @@ public class VisualDirectedGraph extends JPanel {
 		Iterator<Vertex> iterVertices = originalGraph.getVerticesList().iterator();
 
 		while(iterVertices.hasNext()) {
-			VisualVertex current = convertToVisualVertex(iterVertices.next());
+			Vertex current = convertToVertex(iterVertices.next());
 			verticesList.add(current);			
 		}
 
-		Iterator<VisualVertex> iterVisualVertices = verticesList.iterator();
+		Iterator<Vertex> iterVisualVertices = verticesList.iterator();
 		iterVertices = originalGraph.getVerticesList().iterator();
 
 		while(iterVertices.hasNext() && iterVisualVertices.hasNext()) {
 			Vertex vertex = iterVertices.next();
-			VisualVertex visualVertex = iterVisualVertices.next();
+			Vertex Vertex = iterVisualVertices.next();
 
 
 			LinkedList<Vertex> adjacents = vertex.getAdjacents();
@@ -238,18 +238,18 @@ public class VisualDirectedGraph extends JPanel {
 			while(iter.hasNext()) {
 				Vertex adjVert = iter.next();		
 				int index = originalGraph.getVerticesList().indexOf(adjVert);
-				visualVertex.getEdgeList().add(new Edge(verticesList.get(index)));
+				Vertex.getEdgeList().add(new Edge(verticesList.get(index)));
 			}
 
-			visualVertex.getHeight();
-			addVertexToContainer(visualVertex);
+			Vertex.getHeight();
+			addVertexToContainer(Vertex);
 		}
 
 		autoPosVertices();
 		repaint();
 	}
 
-	private void removeVertexFromContainer(final VisualVertex visualVertex) {
+	private void removeVertexFromContainer(final Vertex Vertex) {
 		final int step = 4;
 		final Timer timer = new Timer();
 
@@ -261,12 +261,12 @@ public class VisualDirectedGraph extends JPanel {
 				if(size > 0) {
 					size -= step;
 
-					visualVertex.getLabel().setLocation(visualVertex.getX() + step/2, 
-							visualVertex.getY() + step);
-					visualVertex.getLabel().setSize(size, visualVertex.getHeight());
+					Vertex.getLabel().setLocation(Vertex.getX() + step/2, 
+							Vertex.getY() + step);
+					Vertex.getLabel().setSize(size, Vertex.getHeight());
 					VisualDirectedGraph.this.repaint();
 				} else {
-					remove(visualVertex.getLabel());
+					remove(Vertex.getLabel());
 					VisualDirectedGraph.this.repaint();
 					timer.cancel();
 				}
@@ -276,20 +276,20 @@ public class VisualDirectedGraph extends JPanel {
 		timer.schedule(task, 1, 1);		
 	}		
 
-	private VisualVertex convertToVisualVertex(Vertex vertex) {
-		final VisualVertex visualVertex = new VisualVertex(vertex.getInfo());
-		visualVertex.setLabel(new JLabel(vertex.getInfo().toString()));
-		visualVertex.getLabel().setVisible(true);	
-		visualVertex.getLabel().setHorizontalTextPosition(JLabel.RIGHT);
-		visualVertex.getLabel().setBorder(new LineBorder(Color.lightGray, 1, false));
-		visualVertex.getLabel().setHorizontalAlignment(SwingConstants.CENTER);
-		visualVertex.getLabel().setToolTipText(vertex.getInfo().toString());
+	private Vertex convertToVertex(Vertex vertex) {
+		final Vertex Vertex = new Vertex(vertex.getInfo());
+		Vertex.setLabel(new JLabel(vertex.getInfo().toString()));
+		Vertex.getLabel().setVisible(true);	
+		Vertex.getLabel().setHorizontalTextPosition(JLabel.RIGHT);
+		Vertex.getLabel().setBorder(new LineBorder(Color.lightGray, 1, false));
+		Vertex.getLabel().setHorizontalAlignment(SwingConstants.CENTER);
+		Vertex.getLabel().setToolTipText(vertex.getInfo().toString());
 
 		Color backg = new Color(255, 255, 230);
-		visualVertex.getLabel().setBackground(backg);
-		visualVertex.getLabel().setOpaque(true);		
+		Vertex.getLabel().setBackground(backg);
+		Vertex.getLabel().setOpaque(true);		
 
-		visualVertex.getLabel().addMouseMotionListener(new MouseMotionAdapter() {			
+		Vertex.getLabel().addMouseMotionListener(new MouseMotionAdapter() {			
 			@Override
 			public void mouseDragged(MouseEvent e) {		
 				JLabel vertexLabel = (JLabel)e.getSource();
@@ -301,7 +301,7 @@ public class VisualDirectedGraph extends JPanel {
 					vertexLabel.setLocation(vertexLabel.getX() + (x - dragX), 
 							vertexLabel.getY() + (y - dragY));
 				} else {
-					visualVertex.translate((x - dragX), (y - dragY));
+					Vertex.translate((x - dragX), (y - dragY));
 				}
 
 				VisualDirectedGraph.this.setComponentZOrder(vertexLabel, 0);
@@ -309,7 +309,7 @@ public class VisualDirectedGraph extends JPanel {
 			}
 		});
 
-		visualVertex.getLabel().addMouseListener(new MouseAdapter() {						
+		Vertex.getLabel().addMouseListener(new MouseAdapter() {						
 			@Override
 			public void mousePressed(MouseEvent e) {
 				dragX = e.getX();
@@ -321,7 +321,7 @@ public class VisualDirectedGraph extends JPanel {
 			}
 		});		
 
-		return visualVertex;
+		return Vertex;
 	}
 
 	/**
@@ -337,7 +337,7 @@ public class VisualDirectedGraph extends JPanel {
 	 * Vac�a el componente.
 	 */
 	public void clear() {
-		Iterator<VisualVertex> iter = verticesList.iterator();
+		Iterator<Vertex> iter = verticesList.iterator();
 
 		while(iter.hasNext()) {
 			remove(iter.next().getLabel());
@@ -355,14 +355,14 @@ public class VisualDirectedGraph extends JPanel {
 	private void deleteVertex(Vertex vertex) {
 		verticesList.remove(vertex);
 
-		Iterator<VisualVertex> iter = verticesList.iterator();
+		Iterator<Vertex> iter = verticesList.iterator();
 		while(iter.hasNext()) {
 			iter.next().deleteEdge(vertex);
 		}
 	}
 
 	public Vertex deleteVertex(int pos) {
-		VisualVertex v = null;
+		Vertex v = null;
 		if(posInRange(pos)) {
 			v = verticesList.get(pos);
 			deleteVertex(v);	
@@ -372,27 +372,27 @@ public class VisualDirectedGraph extends JPanel {
 		return v;
 	}
 
-	private void selectVerticesInCascadeRecurs(VisualVertex vertex, LinkedList<VisualVertex> deleted) {
+	private void selectVerticesInCascadeRecurs(Vertex vertex, LinkedList<Vertex> deleted) {
 		if(!deleted.contains(vertex)) {
-			VisualVertex current;
+			Vertex current;
 			LinkedList<Edge> edges = vertex.getEdgeList();
 			Iterator<Edge> iter = edges.iterator();					
 			deleted.add(vertex);
 
 			while(iter.hasNext()) {
-				current = (VisualVertex) iter.next().getVertex();			
+				current = (Vertex) iter.next().getVertex();			
 				selectVerticesInCascadeRecurs(current, deleted);
 			}		
 		}
 	}
 
-	public LinkedList<VisualVertex> deleteVertexCascade(int pos) {
+	public LinkedList<Vertex> deleteVertexCascade(int pos) {
 
-		LinkedList<VisualVertex> deleted = new LinkedList<VisualVertex>();		
+		LinkedList<Vertex> deleted = new LinkedList<Vertex>();		
 
 		if(posInRange(pos)) {
 			selectVerticesInCascadeRecurs(verticesList.get(pos), deleted);			
-			final Iterator<VisualVertex> iter = deleted.iterator();
+			final Iterator<Vertex> iter = deleted.iterator();
 
 			final Timer timer = new Timer();
 			TimerTask task = new TimerTask() {
@@ -400,7 +400,7 @@ public class VisualDirectedGraph extends JPanel {
 				@Override
 				public void run() {
 					if(iter.hasNext()) {
-						VisualVertex v = iter.next();
+						Vertex v = iter.next();
 						deleteVertex(getVertexIndex(v));
 
 						removeVertexFromContainer(v);
@@ -414,7 +414,7 @@ public class VisualDirectedGraph extends JPanel {
 			
 			
 			/*while(iter.hasNext()) {
-				VisualVertex v = iter.next();
+				Vertex v = iter.next();
 				deleteVertex(getVertexIndex(v));
 
 				removeVertexFromContainer(v);
@@ -425,12 +425,12 @@ public class VisualDirectedGraph extends JPanel {
 		return deleted;
 	}	
 
-	public LinkedList<VisualVertex> removeDisconnectVertices() {
-		LinkedList<VisualVertex> verts = new LinkedList<VisualVertex>();					
+	public LinkedList<Vertex> removeDisconnectVertices() {
+		LinkedList<Vertex> verts = new LinkedList<Vertex>();					
 
 		for(int i=0; i<verticesList.size();) {
 			if(degreeDG(i) == 0) {
-				VisualVertex v = verticesList.get(i);
+				Vertex v = verticesList.get(i);
 				verts.add(v);
 				verticesList.remove(i);
 				removeVertexFromContainer(v);
@@ -455,7 +455,7 @@ public class VisualDirectedGraph extends JPanel {
 		if(posInRange(pos)) {
 			degree = 0;
 			Vertex vertex = verticesList.get(pos);
-			Iterator<VisualVertex> iter = verticesList.iterator();
+			Iterator<Vertex> iter = verticesList.iterator();
 
 			while(iter.hasNext()) {
 				if(iter.next().isAdjacent(vertex))
@@ -489,7 +489,7 @@ public class VisualDirectedGraph extends JPanel {
 	private int getVertexIndex(Vertex vertex) {
 		int count = 0;
 		int index = -1;
-		Iterator<VisualVertex> iter = verticesList.iterator();
+		Iterator<Vertex> iter = verticesList.iterator();
 
 		while(index == -1 && iter.hasNext()) {
 			if(iter.next().equals(vertex))

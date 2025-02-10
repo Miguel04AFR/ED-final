@@ -12,19 +12,19 @@ public class Robot {
 	private int x;
 	private int y;
 	private int tamano;
-	
-	
-	
-	
-	
+
+
+
+
+
 	public Robot(int x, int y, int tamano) {
 		super();
-		 setX(x);
-		 setY(y);
-		 setTamano(tamano);
+		setX(x);
+		setY(y);
+		setTamano(tamano);
 	}
-	
-	
+
+
 	public int getX() {
 		return x;
 	}
@@ -43,7 +43,7 @@ public class Robot {
 	public void setTamano(int tamano) {
 		this.tamano = tamano;
 	}
-	
+
 	public Vertex VertexSituado(ILinkedWeightedEdgeDirectedGraph grafo) {//metodo para situar al robot
 		Iterator<Vertex> i=grafo.getVerticesList().iterator();
 		boolean encontrado=false;
@@ -55,9 +55,9 @@ public class Robot {
 			}
 		}
 		return v;
-		
+
 	}
-	
+
 	public boolean VerificarMeta(Vertex a,ILinkedWeightedEdgeDirectedGraph grafo,int meta) {//metodo para verificar si ese nodo puede llegar a la meta
 		if(a.equals(grafo.getVerticesList().get(meta))) {	
 			return true;
@@ -65,14 +65,14 @@ public class Robot {
 		Iterator<Edge> i= a.getEdgeList().iterator();
 		while(i.hasNext()) {
 			Vertex v=i.next().getVertex();
-		
-		if(VerificarMeta(v, grafo, meta))
-		return true;		
+
+			if(VerificarMeta(v, grafo, meta))
+				return true;		
 		}
-		
+
 		return false;
 	}
-	
+
 	public Vertex LLegarMeta(ILinkedWeightedEdgeDirectedGraph grafo, int meta) {//metodo para que el robot llegue a la meta de la manera mas optima
 		Vertex posRobot= VertexSituado(grafo);
 		int minimo=2000;
@@ -91,53 +91,53 @@ public class Robot {
 				}
 			}
 		}
-			
-		
+
+
 		while(i.hasNext() && primeroPuede) {
 			Vertex v=i.next().getVertex();
 			if(tamano(v,grafo,meta,0)<minimo) {
-			minimo=tamano(v,grafo,meta,0);
-			vp=v;
-				
+				minimo=tamano(v,grafo,meta,0);
+				vp=v;
+
 			}
-			
+
 			if(!primeroPuede)
 				vp=null;
-			
+
 		}
-		
+
 		return vp;
 	}
-	
+
 	public int tamano(Vertex a,ILinkedWeightedEdgeDirectedGraph grafo, int meta,int contAc) {
 		if(a.equals(grafo.getVerticesList().get(meta))) {	
 			return contAc;
 		}
-		
-		  int distanciaMinima = 1000;
-		  
-			
+
+		int distanciaMinima = 1000;
+
+
 		Iterator<Edge> ia=a.getEdgeList().iterator();
 		boolean tieneAristas = false;
-				
+
 		while(ia.hasNext()) {
 			tieneAristas=true;
 			WeightedEdge we=((WeightedEdge)ia.next());
 			Vertex v=we.getVertex();
 			int cont=((Tramo)we.getWeight()).getKm() + contAc;
-			
 
-	        int distancia = tamano(v, grafo, meta, cont);
-	        
-	        if(distancia<distanciaMinima) {
-	        	distanciaMinima = distancia;
-		}	
+
+			int distancia = tamano(v, grafo, meta, cont);
+
+			if(distancia<distanciaMinima) {
+				distanciaMinima = distancia;
+			}	
 		}
-		
+
 		if(!tieneAristas) {// Si el vértice no tiene aristas salientes y no es la meta
 			return -1;
 		}
-	
+
 		return distanciaMinima;
 	}
 }
