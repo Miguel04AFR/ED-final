@@ -1,8 +1,9 @@
 package interfaz;
 
-import componentesVisuales.BotonAnimacion;
+
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import java.awt.Color;
+import componentesVisuales.BotonAnimacion;
 
 public class VertexComponente extends BotonAnimacion{
 	

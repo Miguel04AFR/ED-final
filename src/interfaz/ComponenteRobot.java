@@ -53,7 +53,11 @@ public class ComponenteRobot extends JComponent {
 
         // Dibuja la cabeza del robot
         g2d.setColor(new Color(139, 69, 19)); // Color marrón
-        g2d.fillRect(robot.getX(), robot.getY(), robot.getTamano(), robot.getTamano());
+        g2d.fillRect(robot.getX(), robot.getY()-7, robot.getTamano(), robot.getTamano());
+        
+     // Dibuja la cabeza del robot
+        g2d.setColor(new Color(139, 69, 19)); // Color marrón
+        g2d.fillRect(robot.getX()+15, robot.getY()+40, robot.getTamano()-28, robot.getTamano()-35);
 
         // Dibuja los ojos del robot
         g2d.setColor(Color.WHITE);
@@ -80,6 +84,11 @@ public class ComponenteRobot extends JComponent {
         // Dibuja el torso
         g2d.setColor(new Color(160, 82, 45)); // Color marrón
         g2d.fillRect(baseX, baseY, robot.getTamano(), torsoTa);
+        
+     // Dibuja los bordes negros del torso
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(baseX, baseY, robot.getTamano(),torsoTa);
+        
 
         // Dibuja los botones en el torso
         g2d.setColor(Color.BLACK);
@@ -94,8 +103,8 @@ public class ComponenteRobot extends JComponent {
 
         // Dibuja las piernas
         g2d.setColor(new Color(160, 82, 45)); // Color marrón
-        g2d.fillRect(baseX, baseY + torsoTa, piernaTa, torsoTa); // Pierna izquierda
-        g2d.fillRect(baseX + robot.getTamano() - piernaTa, baseY + torsoTa, piernaTa, torsoTa); // Pierna derecha
+        g2d.fillRect(baseX, baseY + torsoTa+1, piernaTa, torsoTa); // Pierna izquierda
+        g2d.fillRect(baseX + robot.getTamano() - piernaTa, baseY + torsoTa+1, piernaTa, torsoTa); // Pierna derecha
 
         // Dibuja detalles adicionales en el torso
         g2d.setColor(Color.BLACK);
