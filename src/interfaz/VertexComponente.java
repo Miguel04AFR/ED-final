@@ -1,31 +1,40 @@
+
 package interfaz;
 
-
+import componentesVisuales.BotonAnimacion;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import java.awt.Color;
-import componentesVisuales.BotonAnimacion;
+import java.awt.Font;
+import java.awt.SystemColor;
 
-public class VertexComponente extends BotonAnimacion{
-	
-	private Vertex vertexAsociado;
+public class VertexComponente extends Vertex{
+	private BotonAnimacion boton;
 	private int x;
 	private int y;
 
-	public VertexComponente(Vertex vertexAsociado,int x, int y) {
-		super();
-		setBackground(new Color(153, 153, 204));
-		setBounds(50,60,142,93);
-		this.vertexAsociado=vertexAsociado;
-		this.x=x;
+	public VertexComponente(String info,BotonAnimacion boton, int x, int y) {
+		super(info);        this.boton=new BotonAnimacion();
+        boton.setForeground(Color.CYAN);
+		boton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		boton.setText("Vertex");
+		boton.setBackground(Color.RED);
+		boton.setColorEfecto(Color.YELLOW);
+		boton.setBounds(113, 120, 130, 76);
+        this.x=x;
 		this.y=y;
+		
+		 boton.setLocation(x, y);
 	}
 	
 	public void setPosicion(int x, int y) {
-		this.x=x;
-		this.y=y;
-		setLocation(x,y);
-		repaint();
-	}
+        this.x = x; // Actualizar coordenada X
+        this.y = y; // Actualizar coordenada Y
+        boton.setLocation(x, y); // Establecer la nueva posición del botón
+    }
+	
+	 public BotonAnimacion getBoton() {
+	        return boton;
+	    }
 	
 	public int getCoordenadaX() {
 		return x;
@@ -35,9 +44,7 @@ public class VertexComponente extends BotonAnimacion{
 		return y;
 	}
 	
-	public Vertex getVertexAsociado() {
-		return vertexAsociado;
-	}
+	
 	
 	
 

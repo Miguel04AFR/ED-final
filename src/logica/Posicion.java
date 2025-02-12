@@ -5,7 +5,6 @@ public class Posicion {
 	private boolean meta;
 	
 	
-	
 	public Posicion(boolean robot, boolean meta) {
 		super();
 		this.robot = robot;
