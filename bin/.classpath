@@ -8,6 +8,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="src/" kind="src" path=""/>
 	<classpathentry kind="lib" path="D:/eclipse actualizado/proyecto2024/ED-final/LinkedGraph_1.0.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse actualizado/proyecto2024/ED-final/api-2024.06.08.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse actualizado/proyecto2024/ED-final/api-2024.06.08.jar" sourcepath="api-2024.06.08.jar"/>
+	<classpathentry kind="lib" path="LinkedGraph_1.0.jar"/>
+	<classpathentry kind="lib" path="api-2024.06.08.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

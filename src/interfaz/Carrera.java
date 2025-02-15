@@ -1,60 +1,260 @@
 package interfaz;
 
-import java.awt.EventQueue;
+import java.awt.Color;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLayeredPane;
-import java.awt.Color;
-import logica.*;
+import Componente.BotonAnimacionImg;
+import cu.edu.cujae.ceis.graph.edge.Edge;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import logica.*;
+import componentesVisuales.BotonAnimacion;
+import javax.swing.border.LineBorder;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Carrera extends JFrame {
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private LinkedList<ComponenteVertex> verticesC;
+	private LinkedList<EdgeComponente> edgesC;
 
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
+	public Carrera(Simulacion simu) {
+		verticesC = new  LinkedList<ComponenteVertex>();
+		edgesC = new  LinkedList<EdgeComponente>();
 
-    /**
-     * Launch the application.
-     */
 
-    /**
-     * Create the frame.
-     */
-    public Carrera(Simulacion simu) {
-        {
-        	{
-                Robot robot = simu.getRobot();
-                if (robot == null) {
-                    robot = new Robot(100, 100, 200); // Inicializa el robot si es null
-                }
-                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                setBounds(100, 100, 938, 649);
-                contentPane = new JPanel();
-                contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-                setContentPane(contentPane);
-                contentPane.setLayout(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 938, 649);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
 
-                JLayeredPane layeredPane = new JLayeredPane();
-                layeredPane.setBounds(0, 0, 922, 610);
-                contentPane.add(layeredPane);
+		JLayeredPane layeredPane = new JLayeredPane();
+		layeredPane.setBounds(0, 0, 922, 610);
+		contentPane.add(layeredPane);
 
-                // Agrega la imagen de fondo
-                JLabel imageLabel = new JLabel(new ImageIcon(Carrera.class.getResource("/recursos/five.jpg")));
-                imageLabel.setBounds(0, 0, 922, 610);
-                layeredPane.add(imageLabel, JLayeredPane.DEFAULT_LAYER);
+		// Agrega la imagen de fondo
+		JLabel imageLabel = new JLabel(new ImageIcon(Carrera.class.getResource("/recursos/five.jpg")));
+		imageLabel.setBounds(0, 0, 922, 610);
+		contentPane.add(imageLabel, JLayeredPane.DEFAULT_LAYER);
 
-                // Agrega los otros componentes encima de la imagen de fondo
-                ComponenteRobot componenteRobot = new ComponenteRobot();
-                componenteRobot.setForeground(new Color(0, 64, 0));
-                componenteRobot.setBounds(64, 157, 433, 377);
-                layeredPane.add(componenteRobot, JLayeredPane.PALETTE_LAYER);
 
-                // Fuerza el repintado del componente
-                componenteRobot.repaint();
-            }
-        }
-    }
+		ComponenteRobot robot = new ComponenteRobot();
+		robot.setForeground(new Color(0, 64, 0));
+		robot.setBounds(106, 112, 95, 232);
+		// Agrega el componente robot encima de la imagen de fondo
+		layeredPane.add(robot, JLayeredPane.PALETTE_LAYER);
+
+		// Fuerza el repintado del componente
+		robot.repaint();
+
+		/*   ComponenteVertex a = new ComponenteVertex(new Posicion(false, false));
+        a.getBoton().isVisible();
+        layeredPane.add(a.getBoton(), JLayeredPane.PALETTE_LAYER);
+
+        ComponenteVertex b = new ComponenteVertex(new Posicion(false, false));
+        b.getBoton().isVisible();
+        b.getBoton().setBounds(200, 190, 50, 50);
+        layeredPane.add(b.getBoton(), JLayeredPane.PALETTE_LAYER);
+
+        EdgeComponente ari = new EdgeComponente(a, b);
+        ari.repaint();
+        layeredPane.add(ari, JLayeredPane.PALETTE_LAYER);
+		 */
+		BotonAnimacion btnmcnPasoAPaso = new BotonAnimacion();
+		btnmcnPasoAPaso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int meta = simu.encontrarMeta();
+				if(!(simu.getRobot().VertexSituado(simu.getGrafo()).
+						equals(simu.getGrafo().getVerticesList().get(meta)))) {
+					Vertex v= simu.getRobot().LLegarMeta(simu.getGrafo(),meta);
+					if(!(v==null)) {
+						moverRobot(v,simu,verticesC,robot);
+					}
+					else {
+			            System.out.println("No hay camino posible para la meta original.");
+
+			            // Buscamos el vértice más cercano accesible
+			            Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
+
+			            if (camino != null) {
+			                // La meta se actualiza dentro de encontrarVerticeMasCercano
+			                // Verifica si hay camino a la nueva metadd
+			                if (simu.getRobot().VerificarMeta(simu.getRobot().VertexSituado(simu.getGrafo()), simu.getGrafo(), simu.encontrarMeta())) {
+			                    // Intentamos mover el robot
+			                    Vertex nuevoV = simu.getRobot().LLegarMeta(simu.getGrafo(), simu.encontrarMeta());
+			                    if (nuevoV != null) {
+			                        moverRobot(nuevoV, simu, verticesC, robot);
+			                    } else {
+			                        System.out.println("No se pudo mover al vértice más cercano.");
+			                    }
+			                } else {
+			                    System.out.println("No hay camino al vértice más cercano.");
+			                }
+			            } else {
+			                System.out.println("No se encontró un vértice más cercano accesible.");
+			            }
+			        }
+			    
+				}//esto es para redirigir la posicion del robot
+
+
+
+
+			}
+		});
+		btnmcnPasoAPaso.setForeground(new Color(0, 0, 205));
+		btnmcnPasoAPaso.setFont(new Font("Segoe UI Black", Font.BOLD, 25));
+		btnmcnPasoAPaso.setText("Paso a paso");
+		btnmcnPasoAPaso.setBorder(new LineBorder(new Color(0, 0, 128), 3));
+		btnmcnPasoAPaso.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five2 (2).jpg")));
+		btnmcnPasoAPaso.setBounds(42, 519, 209, 80);
+
+		// Asegurar que el texto se muestre encima del ícono
+		btnmcnPasoAPaso.setHorizontalTextPosition(BotonAnimacion.CENTER); // Centra el texto horizontalmente
+		btnmcnPasoAPaso.setVerticalTextPosition(BotonAnimacion.CENTER); // Centra el texto verticalmente
+
+		layeredPane.add(btnmcnPasoAPaso, JLayeredPane.PALETTE_LAYER);
+
+		BotonAnimacion btnmcnGrafoAleatorio = new BotonAnimacion();
+		btnmcnGrafoAleatorio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verticesC.clear();
+				edgesC.clear();
+				simu.getGrafo().getVerticesList().clear();
+
+
+				// Limpiar solo los componentes de ComponenteVertex(ojo esto se enseña con un boton) y EdgeComponente
+				for (int j = 0; j < layeredPane.getComponentCount(); j++) {
+					if ((layeredPane.getComponent(j) instanceof BotonAnimacion && layeredPane.getComponent(j).getWidth()==50 && layeredPane.getComponent(j).getHeight()==50) || 
+							layeredPane.getComponent(j) instanceof EdgeComponente) {
+						layeredPane.remove(j);
+						j--; // Ajustar índice después de eliminar componente
+
+
+					}
+				}
+				layeredPane.repaint();
+				grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
+			}
+		});
+
+		BotonAnimacion btnmcnHastaElFinal = new BotonAnimacion();
+		btnmcnHastaElFinal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(simu.getGrafo().getVerticesList().size()==verticesC.size()) {
+					System.out.println("son iguales");
+				}
+				else
+					System.out.println(simu.getGrafo().getVerticesList().size() + "y el otro " + verticesC.size());
+			}
+		});
+		btnmcnHastaElFinal.setVerticalTextPosition(SwingConstants.CENTER);
+		btnmcnHastaElFinal.setText("hasta el final");
+		btnmcnHastaElFinal.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five2 (2).jpg")));
+		btnmcnHastaElFinal.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnmcnHastaElFinal.setForeground(Color.YELLOW);
+		btnmcnHastaElFinal.setFont(new Font("Segoe UI Black", Font.BOLD, 25));
+		btnmcnHastaElFinal.setBorder(new LineBorder(new Color(0, 0, 128), 3));
+		btnmcnHastaElFinal.setBounds(306, 519, 232, 80);
+		layeredPane.add(btnmcnHastaElFinal);
+		btnmcnGrafoAleatorio.setVerticalTextPosition(SwingConstants.CENTER);
+		btnmcnGrafoAleatorio.setText("grafo aleatorio");
+		btnmcnGrafoAleatorio.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five2 (2).jpg")));
+		btnmcnGrafoAleatorio.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnmcnGrafoAleatorio.setForeground(new Color(255, 20, 147));
+		btnmcnGrafoAleatorio.setFont(new Font("Segoe UI Black", Font.BOLD, 25));
+		btnmcnGrafoAleatorio.setBorder(new LineBorder(new Color(0, 0, 128), 3));
+		btnmcnGrafoAleatorio.setBounds(605, 519, 232, 80);
+		layeredPane.add(btnmcnGrafoAleatorio);
+
+
+
+
+		// Inicialización del grafo aleatorio
+		grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
+	}
+
+	public void grafoRandomC(Simulacion simu,LinkedList<ComponenteVertex> verticesC, JLayeredPane layeredPane, LinkedList<EdgeComponente> edgesC,ComponenteRobot robot) {
+		simu.grafoRandom(verticesC,layeredPane);
+		simu.asignarAristasAleatorias(verticesC,layeredPane,edgesC);
+		simu.asignarMeta(0,simu.getGrafo().getVerticesList().size()-1);
+		simu.posRobotIni(verticesC,robot);
+		verticesC.get(simu.encontrarMeta()).getBoton().setBackground(Color.PINK);
+
+
+	}
+
+	public Vertex encontrarVerticeAccesibleMasCercanoAMeta(Simulacion simu, LinkedList<ComponenteVertex> verticesC) {
+	    Vertex posRobot = simu.getRobot().VertexSituado(simu.getGrafo());
+	    Vertex meta = simu.getGrafo().getVerticesList().get(simu.encontrarMeta());
+
+	    // Obtener los vértices accesibles desde la posición actual del robot
+	    LinkedList<Vertex> verticesAccesibles = simu.getRobot().obtenerVerticesAccesibles(posRobot, simu.getGrafo());
+
+	    if (verticesAccesibles.isEmpty()) {
+	        // No hay vértices accesibles
+	        return null;
+	    }
+
+	    // Encontrar el vértice accesible más cercano a la meta 
+	    Vertex verticeMasCercano = null;
+	    double menorDistancia = Double.MAX_VALUE;
+
+	    Iterator<Vertex> iterator = verticesAccesibles.iterator();
+	    while (iterator.hasNext()) {
+	        Vertex v = iterator.next();
+	        int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
+	        ComponenteVertex compV = verticesC.get(indiceV);
+
+	        // Calcular la distancia desde el vértice actual a la meta
+	        double distancia = calcularDistancia(compV, verticesC.get(simu.encontrarMeta()));
+
+	        if (distancia < menorDistancia) {
+	            menorDistancia = distancia;
+	            verticeMasCercano = v;
+	        }
+	    }
+	    
+	    if (verticeMasCercano != null) {
+	        // Actualizar la meta en simu
+	        int indiceNuevaMeta = simu.getGrafo().getVerticesList().indexOf(verticeMasCercano);
+	        simu.setMeta(indiceNuevaMeta);
+	    }
+
+	    return verticeMasCercano;
+	}
+	
+	private double calcularDistancia(ComponenteVertex v1, ComponenteVertex v2) {
+	    int x1 = v1.getBoton().getX();
+	    int y1 = v1.getBoton().getY();
+	    int x2 = v2.getBoton().getX();
+	    int y2 = v2.getBoton().getY();
+
+	    return Math.hypot(x2 - x1, y2 - y1); //esto lo di en calculo || para los vectores jamas pense que me serviria
+	}
+	
+	private void moverRobot(Vertex v,Simulacion simu,LinkedList<ComponenteVertex> verticesC,ComponenteRobot robot) {
+	    int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
+	    robot.setBounds(
+	        verticesC.get(indiceV).getBoton().getX() - 14,
+	        verticesC.get(indiceV).getBoton().getY() - 160,
+	        robot.getWidth(),
+	        robot.getHeight());
+	}
+	
+	
 }
