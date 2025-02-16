@@ -16,25 +16,41 @@ import javax.swing.JLayeredPane;
 import Componente.BotonAnimacionImg;
 import cu.edu.cujae.ceis.graph.edge.Edge;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 import logica.*;
 import componentesVisuales.BotonAnimacion;
 import javax.swing.border.LineBorder;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class Carrera extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private LinkedList<ComponenteVertex> verticesC;
 	private LinkedList<EdgeComponente> edgesC;
+	private JLabel lblNewLabel;
+	private Player exito;
+	private Player error;
+	private Player ambientacion;
+	int  metaOriginal;
+	
+
+
 
 	public Carrera(Simulacion simu) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Carrera.class.getResource("/recursos/iconofredd.png")));
 		verticesC = new  LinkedList<ComponenteVertex>();
 		edgesC = new  LinkedList<EdgeComponente>();
 
-
+		SonidoAmbientacion();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 938, 649);
 		contentPane = new JPanel();
@@ -77,42 +93,62 @@ public class Carrera extends JFrame {
 		BotonAnimacion btnmcnPasoAPaso = new BotonAnimacion();
 		btnmcnPasoAPaso.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int meta = simu.encontrarMeta();
-				if(!(simu.getRobot().VertexSituado(simu.getGrafo()).
-						equals(simu.getGrafo().getVerticesList().get(meta)))) {
-					Vertex v= simu.getRobot().LLegarMeta(simu.getGrafo(),meta);
-					if(!(v==null)) {
-						moverRobot(v,simu,verticesC,robot);
-					}
-					else {
-			            System.out.println("No hay camino posible para la meta original.");
+				if(!(simu.getRobot().VertexSituado(simu.getGrafo()).getEdgeList().size()==0)) {//verificar que el robot no este en una isla
+					int meta = simu.encontrarMeta();
+					if(!(simu.getRobot().VertexSituado(simu.getGrafo()).
+							equals(simu.getGrafo().getVerticesList().get(meta)))) {
+						Vertex v= simu.getRobot().LLegarMeta(simu.getGrafo(),meta);
+						if(!(v==null)) {
+							moverRobot(v,simu,verticesC,robot);
+							if((simu.getRobot().VertexSituado(simu.getGrafo()).
+									equals(simu.getGrafo().getVerticesList().get(meta)) && (meta==metaOriginal))) {
+								detenerAmbientacion();
+								SonidoExito();
+							}
+						
+						}
+						else {
+							if((!(simu.getRobot().VertexSituado(simu.getGrafo()).
+									equals(simu.getGrafo().getVerticesList().get(meta))))) {
+								lblNewLabel.setText("No hay camino posible para la meta");
+								cartelDirecion();
+								
+							}
+							// Buscamos el vértice más cercano accesible
+							Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
 
-			            // Buscamos el vértice más cercano accesible
-			            Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
+							if (camino != null) {
+								// La meta se actualiza dentro de encontrarVerticeMasCercano
+								// Verifica si hay camino a la nueva meta(el vertex mas cercano)
+								if (simu.getRobot().VerificarMeta(simu.getRobot().VertexSituado(simu.getGrafo()), simu.getGrafo(), simu.encontrarMeta())) {
+									// Intentamos mover el robot
+									Vertex nuevoV = simu.getRobot().LLegarMeta(simu.getGrafo(), simu.encontrarMeta());
+									if (nuevoV != null) {
+										moverRobot(nuevoV, simu, verticesC, robot);
+									} else {
+										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
+										cartelDirecion();
+									}
+								} else {
+									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
+									cartelDirecion();
+								}
+							} else {
+								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
+								cartelDirecion();
+							}
+						}
 
-			            if (camino != null) {
-			                // La meta se actualiza dentro de encontrarVerticeMasCercano
-			                // Verifica si hay camino a la nueva metadd
-			                if (simu.getRobot().VerificarMeta(simu.getRobot().VertexSituado(simu.getGrafo()), simu.getGrafo(), simu.encontrarMeta())) {
-			                    // Intentamos mover el robot
-			                    Vertex nuevoV = simu.getRobot().LLegarMeta(simu.getGrafo(), simu.encontrarMeta());
-			                    if (nuevoV != null) {
-			                        moverRobot(nuevoV, simu, verticesC, robot);
-			                    } else {
-			                        System.out.println("No se pudo mover al vértice más cercano.");
-			                    }
-			                } else {
-			                    System.out.println("No hay camino al vértice más cercano.");
-			                }
-			            } else {
-			                System.out.println("No se encontró un vértice más cercano accesible.");
-			            }
-			        }
-			    
-				}//esto es para redirigir la posicion del robot
+					}//esto es para redirigir la posicion del robot
 
 
-
+				}
+				else {
+					lblNewLabel.setText("El vertice de inicio no tiene camino");
+					cartelDirecion();
+					detenerAmbientacion();
+					 SonidoError();
+				}
 
 			}
 		});
@@ -132,6 +168,7 @@ public class Carrera extends JFrame {
 		BotonAnimacion btnmcnGrafoAleatorio = new BotonAnimacion();
 		btnmcnGrafoAleatorio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				SonidoAmbientacion();
 				verticesC.clear();
 				edgesC.clear();
 				simu.getGrafo().getVerticesList().clear();
@@ -155,16 +192,49 @@ public class Carrera extends JFrame {
 		BotonAnimacion btnmcnHastaElFinal = new BotonAnimacion();
 		btnmcnHastaElFinal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(simu.getGrafo().getVerticesList().size()==verticesC.size()) {
-					System.out.println("son iguales");
+				if(!(simu.getRobot().VertexSituado(simu.getGrafo()).getEdgeList().size()==0)) {//verificar que el robot no este en una isla
+					int meta = simu.encontrarMeta();
+					if(!(simu.getRobot().VertexSituado(simu.getGrafo()).
+							equals(simu.getGrafo().getVerticesList().get(meta)))) {
+						moverRobot(simu.getGrafo().getVerticesList().get(meta), simu, verticesC, robot);
+						detenerAmbientacion();
+						SonidoExito();
+					}
+					else {
+						if((!(simu.getRobot().VertexSituado(simu.getGrafo()).
+								equals(simu.getGrafo().getVerticesList().get(meta))))) {
+							lblNewLabel.setText("No hay camino posible para la meta");
+							cartelDirecion();
+
+						}
+						else {
+							Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
+							if (camino != null) 
+							moverRobot(camino,simu,verticesC,robot);
+							else {
+								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
+								cartelDirecion();
+								
+							}
+						}
+
+					}
+
 				}
-				else
-					System.out.println(simu.getGrafo().getVerticesList().size() + "y el otro " + verticesC.size());
-			}
+			else {
+
+				lblNewLabel.setText("El vertice de inicio no tiene camino");
+				cartelDirecion();
+				detenerAmbientacion();
+				SonidoError();
+			}	
+
+		}
+
 		});
 		btnmcnHastaElFinal.setVerticalTextPosition(SwingConstants.CENTER);
-		btnmcnHastaElFinal.setText("hasta el final");
-		btnmcnHastaElFinal.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five2 (2).jpg")));
+		btnmcnHastaElFinal.setText("Hasta el final");
+		btnmcnHastaElFinal.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/dfdf (1).jpg")));
 		btnmcnHastaElFinal.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnmcnHastaElFinal.setForeground(Color.YELLOW);
 		btnmcnHastaElFinal.setFont(new Font("Segoe UI Black", Font.BOLD, 25));
@@ -172,8 +242,8 @@ public class Carrera extends JFrame {
 		btnmcnHastaElFinal.setBounds(306, 519, 232, 80);
 		layeredPane.add(btnmcnHastaElFinal);
 		btnmcnGrafoAleatorio.setVerticalTextPosition(SwingConstants.CENTER);
-		btnmcnGrafoAleatorio.setText("grafo aleatorio");
-		btnmcnGrafoAleatorio.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five2 (2).jpg")));
+		btnmcnGrafoAleatorio.setText("Grafo aleatorio");
+		btnmcnGrafoAleatorio.setIcon(new ImageIcon(Carrera.class.getResource("/recursos/five5.jpg")));
 		btnmcnGrafoAleatorio.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnmcnGrafoAleatorio.setForeground(new Color(255, 20, 147));
 		btnmcnGrafoAleatorio.setFont(new Font("Segoe UI Black", Font.BOLD, 25));
@@ -186,6 +256,15 @@ public class Carrera extends JFrame {
 
 		// Inicialización del grafo aleatorio
 		grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
+
+		lblNewLabel = new JLabel("New label");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setForeground(Color.RED);
+		lblNewLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 23));
+		lblNewLabel.setBounds(127, 11, 594, 40);
+		layeredPane.add(lblNewLabel);
+		lblNewLabel.setVisible(false);
+
 	}
 
 	public void grafoRandomC(Simulacion simu,LinkedList<ComponenteVertex> verticesC, JLayeredPane layeredPane, LinkedList<EdgeComponente> edgesC,ComponenteRobot robot) {
@@ -194,67 +273,172 @@ public class Carrera extends JFrame {
 		simu.asignarMeta(0,simu.getGrafo().getVerticesList().size()-1);
 		simu.posRobotIni(verticesC,robot);
 		verticesC.get(simu.encontrarMeta()).getBoton().setBackground(Color.PINK);
+		metaOriginal=simu.getMeta();
 
 
 	}
 
 	public Vertex encontrarVerticeAccesibleMasCercanoAMeta(Simulacion simu, LinkedList<ComponenteVertex> verticesC) {
-	    Vertex posRobot = simu.getRobot().VertexSituado(simu.getGrafo());
-	    Vertex meta = simu.getGrafo().getVerticesList().get(simu.encontrarMeta());
+		Vertex posRobot = simu.getRobot().VertexSituado(simu.getGrafo());
+		Vertex meta = simu.getGrafo().getVerticesList().get(simu.encontrarMeta());
 
-	    // Obtener los vértices accesibles desde la posición actual del robot
-	    LinkedList<Vertex> verticesAccesibles = simu.getRobot().obtenerVerticesAccesibles(posRobot, simu.getGrafo());
+		// Obtener los vértices accesibles desde la posición actual del robot
+		LinkedList<Vertex> verticesAccesibles = simu.getRobot().obtenerVerticesAccesibles(posRobot, simu.getGrafo());
 
-	    if (verticesAccesibles.isEmpty()) {
-	        // No hay vértices accesibles
-	        return null;
-	    }
+		if (verticesAccesibles.isEmpty()) {
+			// No hay vértices accesibles
+			return null;
+		}
 
-	    // Encontrar el vértice accesible más cercano a la meta 
-	    Vertex verticeMasCercano = null;
-	    double menorDistancia = Double.MAX_VALUE;
+		// Encontrar el vértice accesible más cercano a la meta 
+		Vertex verticeMasCercano = null;
+		double menorDistancia = Double.MAX_VALUE;
 
-	    Iterator<Vertex> iterator = verticesAccesibles.iterator();
-	    while (iterator.hasNext()) {
-	        Vertex v = iterator.next();
-	        int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
-	        ComponenteVertex compV = verticesC.get(indiceV);
+		Iterator<Vertex> iterator = verticesAccesibles.iterator();
+		while (iterator.hasNext()) {
+			Vertex v = iterator.next();
+			int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
+			ComponenteVertex compV = verticesC.get(indiceV);
 
-	        // Calcular la distancia desde el vértice actual a la meta
-	        double distancia = calcularDistancia(compV, verticesC.get(simu.encontrarMeta()));
+			// Calcular la distancia desde el vértice actual a la meta
+			double distancia = calcularDistancia(compV, verticesC.get(simu.encontrarMeta()));
 
-	        if (distancia < menorDistancia) {
-	            menorDistancia = distancia;
-	            verticeMasCercano = v;
-	        }
-	    }
-	    
-	    if (verticeMasCercano != null) {
-	        // Actualizar la meta en simu
-	        int indiceNuevaMeta = simu.getGrafo().getVerticesList().indexOf(verticeMasCercano);
-	        simu.setMeta(indiceNuevaMeta);
-	    }
+			if (distancia < menorDistancia) {
+				menorDistancia = distancia;
+				verticeMasCercano = v;
+			}
+		}
 
-	    return verticeMasCercano;
+		if (verticeMasCercano != null) {
+			// Actualizar la meta en simu
+			int indiceNuevaMeta = simu.getGrafo().getVerticesList().indexOf(verticeMasCercano);
+			simu.setMeta(indiceNuevaMeta);
+		}
+
+		return verticeMasCercano;
 	}
-	
+
 	private double calcularDistancia(ComponenteVertex v1, ComponenteVertex v2) {
-	    int x1 = v1.getBoton().getX();
-	    int y1 = v1.getBoton().getY();
-	    int x2 = v2.getBoton().getX();
-	    int y2 = v2.getBoton().getY();
+		int x1 = v1.getBoton().getX();
+		int y1 = v1.getBoton().getY();
+		int x2 = v2.getBoton().getX();
+		int y2 = v2.getBoton().getY();
 
-	    return Math.hypot(x2 - x1, y2 - y1); //esto lo di en calculo || para los vectores jamas pense que me serviria
+		return Math.hypot(x2 - x1, y2 - y1); //esto lo di en calculo || para los vectores jamas pense que me serviria
 	}
-	
+
 	private void moverRobot(Vertex v,Simulacion simu,LinkedList<ComponenteVertex> verticesC,ComponenteRobot robot) {
-	    int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
-	    robot.setBounds(
-	        verticesC.get(indiceV).getBoton().getX() - 14,
-	        verticesC.get(indiceV).getBoton().getY() - 160,
-	        robot.getWidth(),
-	        robot.getHeight());
+		int indiceV = simu.getGrafo().getVerticesList().indexOf(v);
+		robot.setBounds(
+				verticesC.get(indiceV).getBoton().getX() - 14,
+				verticesC.get(indiceV).getBoton().getY() - 160,
+				robot.getWidth(),
+				robot.getHeight());
+	}
+	public void cartelDirecion() {
+
+		Timer timer = new Timer(1000, new ActionListener() {
+			int i=0;
+			@Override
+
+			public void actionPerformed(ActionEvent e) {
+
+				if(i<4) {
+					if(i%2==0) {
+						lblNewLabel.setVisible(true);
+					}
+					else
+						lblNewLabel.setVisible(false);
+				}
+				else {
+					lblNewLabel.setVisible(false);
+					((Timer)e.getSource()).stop();
+				}
+				i++;
+
+			}
+
+		});
+
+		timer.setRepeats(true);
+		timer.start();
+
+
 	}
 	
+	public  void SonidoError(){
+		  Thread hiloContinua = new Thread(new Runnable() {//esto se llama hilo y sirve para que el programa no se congele mientras suena el sonido
+		        @Override
+		        public void run() {
+		try{
+		String sonidoError="audios/FNaF_1_-_Risa_de_niña,_normal_(Golden_Freddy).mp3"; //el sonido de error
+		 FileInputStream fis = new FileInputStream(sonidoError);
+		 error = new Player(fis);
+		 error.play();
+		}
+		catch (FileNotFoundException e){
+			System.out.println("archivo no encontrado");
+		}
+		catch (JavaLayerException e){
+			System.out.println("Error al reproducir");
+		}
+
+	}
+		
+	});
+		  hiloContinua.start();//esto hace que el programa no se congele
+	}
 	
+	public  void SonidoExito(){
+		  Thread hiloContinua = new Thread(new Runnable() {//esto se llama hilo y sirve para que el programa no se congele mientras suena el sonido
+		        @Override
+		        public void run() {
+		try{
+		String sonidoExito = "audios/FNaF_-_Grito_de_niños.mp3"; //el sonido de  exito
+		 FileInputStream fis = new FileInputStream(sonidoExito);
+		 exito = new Player(fis);
+		 exito.play();
+		}
+		catch (FileNotFoundException e){
+			System.out.println("archivo no encontrado");
+		}
+		catch (JavaLayerException e){
+			System.out.println("Error al reproducir");
+		}
+
+	}
+		
+	});
+		  hiloContinua.start();//esto hace que el programa no se congele
+	}
+	
+	public  void SonidoAmbientacion(){
+		  Thread hiloContinua = new Thread(new Runnable() {//esto se llama hilo y sirve para que el programa no se congele mientras suena el sonido
+		        @Override
+		        public void run() {
+		try{
+		String sonidoAmbientacion = "audios/MenúFNAF.mp3"; //el sonido de  ambientacion
+		 FileInputStream fis = new FileInputStream(sonidoAmbientacion);
+		 ambientacion = new Player(fis);
+		 ambientacion.play();
+		}
+		catch (FileNotFoundException e){
+			System.out.println("archivo no encontrado");
+		}
+		catch (JavaLayerException e){
+			System.out.println("Error al reproducir");
+		}
+
+	}
+		
+	});
+		  hiloContinua.start();//esto hace que el programa no se congele
+	}
+	
+	public void detenerAmbientacion() {
+	    if (ambientacion != null) {
+	        ambientacion.close();
+	    }
+	}
+
 }

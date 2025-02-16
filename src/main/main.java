@@ -2,6 +2,9 @@ package main;
 
 import java.awt.EventQueue;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.intellijthemes.FlatDarkPurpleIJTheme;
+
 import cu.edu.cujae.ceis.graph.LinkedGraph;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedNotDirectedGraph;
 import interfaz.Carrera;
@@ -14,6 +17,7 @@ public class main {
 		ILinkedWeightedEdgeDirectedGraph grafo = new LinkedGraph();
 		Robot robot = new Robot(100,100,150);
 		Simulacion simu=new Simulacion(grafo,robot);
+		FlatDarkPurpleIJTheme.setup();
 		
 		
 		
