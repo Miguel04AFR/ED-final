@@ -1,13 +1,18 @@
 package logica;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JLayeredPane;
 
 import cu.edu.cujae.ceis.graph.edge.WeightedEdge;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedEdgeDirectedGraph;
+import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import interfaz.ComponenteRobot;
 import interfaz.ComponenteVertex;
 import interfaz.EdgeComponente;
@@ -151,6 +156,45 @@ public class Simulacion {
 	    // Actualizar el índice de la meta
 	    this.meta = nuevoIndiceMeta;
 	}
+	
+	public void registrarSimulacion(EstadoSimulacion es) {
+        String nombreArchivo = "recursos/registro_simulacion.dat"; // Nombre del archivo donde se guardarán los datos
+        File archivo = new File(nombreArchivo);
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "rw")) {
+        	// Mover el puntero al final del archivo para agregar nuevos registros
+            raf.seek(raf.length());
+
+            // Convertir los datos a un arreglo de bytes
+            byte[] salidaBytes = ("Salida: " + es.getPosicionInicial().getInfo() + "\n").getBytes();
+            byte[] metaBytes = ("Meta: " + es.getPosicionFinal() + "\n").getBytes();
+            byte[] pasosBytes = ("Pasos: " + es.getPasos() + "\n").getBytes();
+            byte[] direccionesBytes = ("Direcciones: " + String.join(", ", es.getDirecciones()) + "\n").getBytes();
+            byte[] llegoMetaBytes = ("Llegó a la meta: " + (es.getLlegoMeta() ? "Sí" : "No") + "\n").getBytes();
+            byte[] separadorBytes = "--------------------------------------------------\n".getBytes(); // Separador para registros
+
+            // Escribir la longitud de cada registro y luego el registro en el archivo
+            raf.writeLong(salidaBytes.length);
+            raf.write(salidaBytes);
+            raf.writeLong(metaBytes.length);
+            raf.write(metaBytes);
+            raf.writeLong(pasosBytes.length);
+            raf.write(pasosBytes);
+            raf.writeLong(direccionesBytes.length);
+            raf.write(direccionesBytes);
+            raf.writeLong(llegoMetaBytes.length);
+            raf.write(llegoMetaBytes);
+            raf.writeLong(separadorBytes.length);
+            raf.write(separadorBytes);
+
+            System.out.println("Registrando simulación...");
+        } catch (IOException e) {
+        	System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            e.printStackTrace(); // Manejo de excepciones
+        }
+    }
+
+
 	
 	
 

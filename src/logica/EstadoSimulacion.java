@@ -10,10 +10,11 @@ public class EstadoSimulacion implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public int pasos;
-	public ArrayList<String> direcciones;
-	public boolean llegoMeta;
-	public Vertex posicionInicial;
+	private int pasos;
+	private ArrayList<String> direcciones;
+	private boolean llegoMeta;
+	private Vertex posicionInicial;
+	private Vertex posicionFinal;
 	
 	public EstadoSimulacion() {
 		super();
@@ -21,6 +22,12 @@ public class EstadoSimulacion implements Serializable{
 		this.direcciones = new ArrayList<>();
 		this.llegoMeta = false;
 		this.posicionInicial = null;
+	}
+	public Vertex getPosicionFinal() {
+		return posicionFinal;
+	}
+	public void setPosicionFinal(Vertex posicionFinal) {
+		this.posicionFinal = posicionFinal;
 	}
 	public int getPasos() {
 		return pasos;
@@ -34,7 +41,7 @@ public class EstadoSimulacion implements Serializable{
 	public void setDirecciones(ArrayList<String> direcciones) {
 		this.direcciones = direcciones;
 	}
-	public boolean isLlegoMeta() {
+	public boolean getLlegoMeta() {
 		return llegoMeta;
 	}
 	public void setLlegoMeta(boolean llegoMeta) {

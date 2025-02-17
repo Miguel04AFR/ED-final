@@ -48,7 +48,6 @@ public class Carrera extends JFrame {
 
 	public Carrera(Simulacion simu) {
 		this.estadoSimulacion = new EstadoSimulacion();
-		estadoSimulacion.posicionInicial = simu.getRobot().VertexSituado(simu.getGrafo()); // Guardar posición inicials
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Carrera.class.getResource("/recursos/iconofredd.png")));
 		verticesC = new  LinkedList<ComponenteVertex>();
 		edgesC = new  LinkedList<EdgeComponente>();
@@ -103,13 +102,16 @@ public class Carrera extends JFrame {
 						Vertex v= simu.getRobot().LLegarMeta(simu.getGrafo(),meta);
 						if(!(v==null)) {
 							moverRobot(v,simu,verticesC,robot);
-							estadoSimulacion.pasos++; // Incrementar el contador de pasos
-		                    estadoSimulacion.direcciones.add("Movimiento a: " + v.getInfo()); // Agregar dirección
-		                    estadoSimulacion.llegoMeta = (v.equals(simu.getGrafo().getVerticesList().get(meta))); // Verificar si llegó a la meta
+							estadoSimulacion.setPasos(estadoSimulacion.getPasos()+1); // Incrementar el contador de pasos
+		                    estadoSimulacion.getDirecciones().add("Movimiento a: " + simu.getGrafo().getVerticesList().indexOf(v)); // Agregar dirección
+		                    
 							if((simu.getRobot().VertexSituado(simu.getGrafo()).
-									equals(simu.getGrafo().getVerticesList().get(meta)) && (meta==metaOriginal))) {
+									equals(simu.getGrafo().getVerticesList().get(meta)) && (meta==metaOriginal))) {//esto es que llego a la meta
 								detenerAmbientacion();
 								SonidoExito();
+								estadoSimulacion.setLlegoMeta(true);
+								simu.registrarSimulacion(estadoSimulacion);
+								
 							}
 						
 						}
@@ -131,24 +133,29 @@ public class Carrera extends JFrame {
 									Vertex nuevoV = simu.getRobot().LLegarMeta(simu.getGrafo(), simu.encontrarMeta());
 									if (nuevoV != null) {
 										moverRobot(nuevoV, simu, verticesC, robot);
+										moverRobot(v,simu,verticesC,robot);
+										estadoSimulacion.setPasos(estadoSimulacion.getPasos()+1); // Incrementar el contador de pasos
+					                    estadoSimulacion.getDirecciones().add("Movimiento a: " + simu.getGrafo().getVerticesList().indexOf(nuevoV));
+										
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
+										simu.registrarSimulacion(estadoSimulacion);
 									}
 								} else {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
+									simu.registrarSimulacion(estadoSimulacion);
 								}
 							} else {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
+								simu.registrarSimulacion(estadoSimulacion);
 							}
 						}
 
 					}//esto es para redirigir la posicion del robot
 					
-					
-					simu.getRobot().registrarSimulacion(estadoSimulacion.pasos, estadoSimulacion.direcciones, estadoSimulacion.llegoMeta, estadoSimulacion.posicionInicial, simu.getGrafo().getVerticesList().get(simu.getMeta()));
 
 				}
 				else {
@@ -283,6 +290,7 @@ public class Carrera extends JFrame {
 		simu.asignarAristasAleatorias(verticesC,layeredPane,edgesC);
 		simu.asignarMeta(0,simu.getGrafo().getVerticesList().size()-1);
 		simu.posRobotIni(verticesC,robot);
+		estadoSimulacion.setPosicionInicial(simu.getRobot().VertexSituado(simu.getGrafo())); // Guardar posición inicial
 		verticesC.get(simu.encontrarMeta()).getBoton().setBackground(Color.PINK);
 		metaOriginal=simu.getMeta();
 
