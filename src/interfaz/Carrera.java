@@ -41,11 +41,14 @@ public class Carrera extends JFrame {
 	private Player error;
 	private Player ambientacion;
 	int  metaOriginal;
+	private EstadoSimulacion estadoSimulacion;
 	
 
 
 
 	public Carrera(Simulacion simu) {
+		this.estadoSimulacion = new EstadoSimulacion();
+		estadoSimulacion.posicionInicial = simu.getRobot().VertexSituado(simu.getGrafo()); // Guardar posición inicials
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Carrera.class.getResource("/recursos/iconofredd.png")));
 		verticesC = new  LinkedList<ComponenteVertex>();
 		edgesC = new  LinkedList<EdgeComponente>();
@@ -100,6 +103,9 @@ public class Carrera extends JFrame {
 						Vertex v= simu.getRobot().LLegarMeta(simu.getGrafo(),meta);
 						if(!(v==null)) {
 							moverRobot(v,simu,verticesC,robot);
+							estadoSimulacion.pasos++; // Incrementar el contador de pasos
+		                    estadoSimulacion.direcciones.add("Movimiento a: " + v.getInfo()); // Agregar dirección
+		                    estadoSimulacion.llegoMeta = (v.equals(simu.getGrafo().getVerticesList().get(meta))); // Verificar si llegó a la meta
 							if((simu.getRobot().VertexSituado(simu.getGrafo()).
 									equals(simu.getGrafo().getVerticesList().get(meta)) && (meta==metaOriginal))) {
 								detenerAmbientacion();
@@ -140,7 +146,9 @@ public class Carrera extends JFrame {
 						}
 
 					}//esto es para redirigir la posicion del robot
-
+					
+					
+					simu.getRobot().registrarSimulacion(estadoSimulacion.pasos, estadoSimulacion.direcciones, estadoSimulacion.llegoMeta, estadoSimulacion.posicionInicial, simu.getGrafo().getVerticesList().get(simu.getMeta()));
 
 				}
 				else {
@@ -149,8 +157,11 @@ public class Carrera extends JFrame {
 					detenerAmbientacion();
 					 SonidoError();
 				}
+				
 
 			}
+			
+			
 		});
 		btnmcnPasoAPaso.setForeground(new Color(0, 0, 205));
 		btnmcnPasoAPaso.setFont(new Font("Segoe UI Black", Font.BOLD, 25));

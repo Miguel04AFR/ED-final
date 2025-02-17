@@ -20,7 +20,6 @@ public class main {
 		FlatDarkPurpleIJTheme.setup();
 		
 		
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {

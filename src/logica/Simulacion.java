@@ -7,10 +7,7 @@ import java.util.Random;
 import javax.swing.JLayeredPane;
 
 import cu.edu.cujae.ceis.graph.edge.WeightedEdge;
-import cu.edu.cujae.ceis.graph.interfaces.ILinkedDirectedGraph;
-import cu.edu.cujae.ceis.graph.interfaces.ILinkedNotDirectedGraph;
 import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedEdgeDirectedGraph;
-import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import interfaz.ComponenteRobot;
 import interfaz.ComponenteVertex;
 import interfaz.EdgeComponente;
@@ -154,5 +151,7 @@ public class Simulacion {
 	    // Actualizar el índice de la meta
 	    this.meta = nuevoIndiceMeta;
 	}
+	
+	
 
 }

@@ -1,8 +1,13 @@
 package logica;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import cu.edu.cujae.ceis.graph.edge.Edge;
 import cu.edu.cujae.ceis.graph.edge.WeightedEdge;
@@ -10,6 +15,10 @@ import cu.edu.cujae.ceis.graph.interfaces.ILinkedWeightedEdgeDirectedGraph;
 import cu.edu.cujae.ceis.graph.vertex.Vertex;
 import logica.Posicion;
 import cu.edu.cujae.ceis.graph.edge.*;
+import logica.Simulacion;
+
+
+
 public class Robot {
 	private int x;
 	private int y;
@@ -95,6 +104,7 @@ public class Robot {
 		Vertex posRobot= VertexSituado(grafo);
 		int minimo=2000;
 		Vertex vp=null;
+		
 		Iterator<Edge> i= posRobot.getEdgeList().iterator();
 		if (i.hasNext()) {
 		 vp=i.next().getVertex();
@@ -127,11 +137,49 @@ public class Robot {
 			else {
 				((Posicion)posRobot.getInfo()).setRobot(false);
 				((Posicion)vp.getInfo()).setRobot(true);
-				
+
 			}
 		}
 		return vp;
 	}
+
+	public void registrarSimulacion(int pasos, List<String> direcciones, boolean llegoMeta, Vertex posicionInicial, Vertex meta) {
+        String nombreArchivo = "recursos/registro_simulacion.dat"; // Nombre del archivo donde se guardarán los datos
+        File archivo = new File(nombreArchivo);
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "rw")) {
+        	// Mover el puntero al final del archivo para agregar nuevos registros
+            raf.seek(raf.length());
+
+            // Convertir los datos a un arreglo de bytes
+            byte[] salidaBytes = ("Salida: " + posicionInicial.getInfo() + "\n").getBytes();
+            byte[] metaBytes = ("Meta: " + meta.getInfo() + "\n").getBytes();
+            byte[] pasosBytes = ("Pasos: " + pasos + "\n").getBytes();
+            byte[] direccionesBytes = ("Direcciones: " + String.join(", ", direcciones) + "\n").getBytes();
+            byte[] llegoMetaBytes = ("Llegó a la meta: " + (llegoMeta ? "Sí" : "No") + "\n").getBytes();
+            byte[] separadorBytes = "--------------------------------------------------\n".getBytes(); // Separador para registros
+
+            // Escribir la longitud de cada registro y luego el registro en el archivo
+            raf.writeLong(salidaBytes.length);
+            raf.write(salidaBytes);
+            raf.writeLong(metaBytes.length);
+            raf.write(metaBytes);
+            raf.writeLong(pasosBytes.length);
+            raf.write(pasosBytes);
+            raf.writeLong(direccionesBytes.length);
+            raf.write(direccionesBytes);
+            raf.writeLong(llegoMetaBytes.length);
+            raf.write(llegoMetaBytes);
+            raf.writeLong(separadorBytes.length);
+            raf.write(separadorBytes);
+
+            System.out.println("Registrando simulación...");
+        } catch (IOException e) {
+        	System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            e.printStackTrace(); // Manejo de excepciones
+        }
+    }
+
 
 	public int tamano(Vertex a, ILinkedWeightedEdgeDirectedGraph grafo, int meta, int contAc) {//distancia mas cortga
 	    LinkedList<Vertex> visitados = new LinkedList<>();//declaro este metodo para guardar en esta lista los vertex visitados
