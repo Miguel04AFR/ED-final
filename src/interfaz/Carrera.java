@@ -103,7 +103,7 @@ public class Carrera extends JFrame {
 						if(!(v==null)) {
 							moverRobot(v,simu,verticesC,robot);
 							estadoSimulacion.setPasos(estadoSimulacion.getPasos()+1); // Incrementar el contador de pasos
-		                    estadoSimulacion.getDirecciones().add("Movimiento a: " + simu.getGrafo().getVerticesList().indexOf(v)); // Agregar dirección
+							estadoSimulacion.getDirecciones().add(simu.getGrafo().getVerticesList().indexOf(v)); // Agregar dirección
 		                    
 							if((simu.getRobot().VertexSituado(simu.getGrafo()).
 									equals(simu.getGrafo().getVerticesList().get(meta)) && (meta==metaOriginal))) {//esto es que llego a la meta
@@ -133,9 +133,8 @@ public class Carrera extends JFrame {
 									Vertex nuevoV = simu.getRobot().LLegarMeta(simu.getGrafo(), simu.encontrarMeta());
 									if (nuevoV != null) {
 										moverRobot(nuevoV, simu, verticesC, robot);
-										moverRobot(v,simu,verticesC,robot);
 										estadoSimulacion.setPasos(estadoSimulacion.getPasos()+1); // Incrementar el contador de pasos
-					                    estadoSimulacion.getDirecciones().add("Movimiento a: " + simu.getGrafo().getVerticesList().indexOf(nuevoV));
+										estadoSimulacion.getDirecciones().add(simu.getGrafo().getVerticesList().indexOf(nuevoV));
 										
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
@@ -290,16 +289,17 @@ public class Carrera extends JFrame {
 		simu.asignarAristasAleatorias(verticesC,layeredPane,edgesC);
 		simu.asignarMeta(0,simu.getGrafo().getVerticesList().size()-1);
 		simu.posRobotIni(verticesC,robot);
-		estadoSimulacion.setPosicionInicial(simu.getRobot().VertexSituado(simu.getGrafo())); // Guardar posición inicial
 		verticesC.get(simu.encontrarMeta()).getBoton().setBackground(Color.PINK);
 		metaOriginal=simu.getMeta();
+		estadoSimulacion.setPosicionInicial(simu.getRobot().VertexSituado(simu.getGrafo())); // Guardar posición inicial
+		estadoSimulacion.setPosicionFinal(simu.getGrafo().getVerticesList().get(metaOriginal));
 
 
 	}
 
 	public Vertex encontrarVerticeAccesibleMasCercanoAMeta(Simulacion simu, LinkedList<ComponenteVertex> verticesC) {
 		Vertex posRobot = simu.getRobot().VertexSituado(simu.getGrafo());
-		Vertex meta = simu.getGrafo().getVerticesList().get(simu.encontrarMeta());
+		//Vertex meta = simu.getGrafo().getVerticesList().get(simu.encontrarMeta());
 
 		// Obtener los vértices accesibles desde la posición actual del robot
 		LinkedList<Vertex> verticesAccesibles = simu.getRobot().obtenerVerticesAccesibles(posRobot, simu.getGrafo());
