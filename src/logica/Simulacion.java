@@ -1,10 +1,12 @@
 package logica;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,30 +162,58 @@ public class Simulacion {
 	}
 	
 	public void registrarSimulacion(EstadoSimulacion es) {
-       
-
-        try (RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw")) {// Nombre del archivo donde se guardarán los datos y formato
-          byte[] estadoSimulacionBytes = null;
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                 ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-                 
-                oos.writeObject(es); // Escribir el objeto
-                oos.flush(); // Asegurarse de que todos los datos se escriban
-                estadoSimulacionBytes = baos.toByteArray(); // Obtener el arreglo de bytes
-            } catch (IOException e) {
-                e.printStackTrace(); // Manejo de excepciones
-            }
-            
-            // Escribir el arreglo de bytes en el archivo
-            raf.write(estadoSimulacionBytes);
-            System.out.println("Registrando simulación...");
-        } catch (IOException e) {
-          System.err.println("Error al escribir en el archivo: " + e.getMessage());
-            e.printStackTrace(); // Manejo de excepciones
-        }
-
-
-	
+	    try {
+	        RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw");
+	        // Crear encabezado si el archivo está vacío
+	        if (raf.length() == 0) {
+	            raf.seek(0);
+	            String header = "Registro de Simulaciones";
+	            byte[] bytes = header.getBytes(StandardCharsets.UTF_8); // Convertir a bytes
+	            raf.writeInt(bytes.length);
+	            raf.write(bytes);
+	            raf.writeInt(0); // Contador de simulaciones
+	        }
+	        // Lógica para guardar la simulación
+	        raf.seek(0);
+	        int skip = raf.readInt(); // Leer longitud del encabezado
+	        raf.skipBytes(skip); // Saltar el encabezado
+	        int count = raf.readInt() + 1; // Incrementar contador de simulaciones
+	        raf.seek(raf.getFilePointer() - 4); // Volver al contador
+	        raf.writeInt(count); // Escribir nuevo contador
+	        
+	        // Convertir el objeto EstadoSimulacion a bytes
+	        byte[] estadoBytes = convertEstadoSimulacionToBytes(es);
+	        
+	        // Guardar el estado de la simulación
+	        raf.writeInt(estadoBytes.length); // Escribir longitud del estado
+	        raf.write(estadoBytes); // Escribir el estado
+	        raf.close(); // Cerrar el archivo
+	    } catch (IOException e) {
+	        throw new RuntimeException(e); // Manejo de excepciones
+	    }
 	}
+	
+	
+	private byte[] convertEstadoSimulacionToBytes(EstadoSimulacion es) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            DataOutputStream dos = new DataOutputStream(baos);
+            
+            // Escribir los campos de EstadoSimulacion manualmente
+            dos.writeInt(es.getPasos());
+            dos.writeInt(es.getDirecciones().size()); // Tamaño de la lista de direcciones
+            for (Integer direccion : es.getDirecciones()) {
+                dos.writeInt(direccion); // Escribir cada dirección
+            }
+            dos.writeBoolean(es.getLlegoMeta());
+            dos.writeInt(es.getPosicionInicial());
+            dos.writeInt(es.getPosicionFinal());
+            
+            dos.flush(); // Asegurarse de que todos los datos se escriban
+            return baos.toByteArray(); // Obtener el arreglo de bytes
+        } catch (IOException e) {
+            throw new RuntimeException("Error al convertir el objeto EstadoSimulacion a bytes", e);
+        }
+    }
+
 
 }

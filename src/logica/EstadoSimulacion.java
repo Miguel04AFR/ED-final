@@ -3,8 +3,6 @@ package logica;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import cu.edu.cujae.ceis.graph.vertex.Vertex;
-
 public class EstadoSimulacion implements Serializable{
 	/**
 	 * 
@@ -13,21 +11,21 @@ public class EstadoSimulacion implements Serializable{
 	private int pasos;
 	private ArrayList<Integer> direcciones;
 	private boolean llegoMeta;
-	private Vertex posicionInicial;
-	private Vertex posicionFinal;
+	private int posicionInicial;
+	private int posicionFinal;
 	
 	public EstadoSimulacion() {
 		super();
 		this.pasos = 0;
 		this.direcciones = new ArrayList<>();
 		this.llegoMeta = false;
-		this.posicionInicial = null;
-		this.posicionFinal=null;
+		this.posicionInicial=-1;
+		this.posicionFinal=-1;
 	}
-	public Vertex getPosicionFinal() {
+	public Integer getPosicionFinal() {
 		return posicionFinal;
 	}
-	public void setPosicionFinal(Vertex posicionFinal) {
+	public void setPosicionFinal(Integer posicionFinal) {
 		this.posicionFinal = posicionFinal;
 	}
 	public int getPasos() {
@@ -48,10 +46,10 @@ public class EstadoSimulacion implements Serializable{
 	public void setLlegoMeta(boolean llegoMeta) {
 		this.llegoMeta = llegoMeta;
 	}
-	public Vertex getPosicionInicial() {
+	public Integer getPosicionInicial() {
 		return posicionInicial;
 	}
-	public void setPosicionInicial(Vertex posicionInicial) {
+	public void setPosicionInicial(Integer posicionInicial) {
 		this.posicionInicial = posicionInicial;
 	}
 

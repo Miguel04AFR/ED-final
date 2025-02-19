@@ -291,8 +291,8 @@ public class Carrera extends JFrame {
 		simu.posRobotIni(verticesC,robot);
 		verticesC.get(simu.encontrarMeta()).getBoton().setBackground(Color.PINK);
 		metaOriginal=simu.getMeta();
-		estadoSimulacion.setPosicionInicial(simu.getRobot().VertexSituado(simu.getGrafo())); // Guardar posición inicial
-		estadoSimulacion.setPosicionFinal(simu.getGrafo().getVerticesList().get(metaOriginal));
+		estadoSimulacion.setPosicionInicial(simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo()))); // Guardar posición inicial
+		estadoSimulacion.setPosicionFinal(metaOriginal); // Guardar posición final
 
 
 	}
