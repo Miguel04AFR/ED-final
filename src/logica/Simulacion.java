@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,8 +163,7 @@ public class Simulacion {
 	}
 	
 	public void registrarSimulacion(EstadoSimulacion es) {
-	    try {
-	        RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw");
+	    try (RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw")) {
 	        // Crear encabezado si el archivo está vacío
 	        if (raf.length() == 0) {
 	            raf.seek(0);
@@ -187,12 +187,32 @@ public class Simulacion {
 	        // Guardar el estado de la simulación
 	        raf.writeInt(estadoBytes.length); // Escribir longitud del estado
 	        raf.write(estadoBytes); // Escribir el estado
-	        raf.close(); // Cerrar el archivo
+	        
+	        // Leer el estado de la simulación desde el archivo para verificar
+	        long position = raf.getFilePointer() - estadoBytes.length - 4; // Retroceder a la posición donde se escribió la simulación
+	        verificarSimulacionRegistrada(position, estadoBytes.length);
 	    } catch (IOException e) {
 	        throw new RuntimeException(e); // Manejo de excepciones
 	    }
 	}
-	
+
+	private void verificarSimulacionRegistrada(long position, int length) {
+	    try (RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "r")) {
+	        raf.seek(position); // Ir a la posición donde se escribió la simulación
+	        int readLength = raf.readInt(); // Leer la longitud del estado
+	        if (readLength != length) {
+	            throw new RuntimeException("La longitud del estado leído no coincide con la longitud esperada.");
+	        }
+	        byte[] readBytes = new byte[readLength];
+	        raf.readFully(readBytes); // Leer el estado desde el archivo
+	        
+	        // Imprimir los bytes leídos para verificar
+	        System.out.printf("Estado de la simulación registrado correctamente: %s%n", Arrays.toString(readBytes));
+	    } catch (IOException e) {
+	        throw new RuntimeException("Error al verificar la simulación registrada", e);
+	    }
+	}
+
 	
 	private byte[] convertEstadoSimulacionToBytes(EstadoSimulacion es) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -214,6 +234,12 @@ public class Simulacion {
             throw new RuntimeException("Error al convertir el objeto EstadoSimulacion a bytes", e);
         }
     }
+	
+	
+	
+	
+	
+	
 
 
 }

@@ -120,7 +120,7 @@ public class Carrera extends JFrame {
 									equals(simu.getGrafo().getVerticesList().get(meta))))) {
 								lblNewLabel.setText("No hay camino posible para la meta");
 								cartelDirecion();
-								
+								simu.registrarSimulacion(estadoSimulacion);
 							}
 							// Buscamos el vértice más cercano accesible
 							Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
@@ -159,6 +159,7 @@ public class Carrera extends JFrame {
 				}
 				else {
 					lblNewLabel.setText("El vertice de inicio no tiene camino");
+					simu.registrarSimulacion(estadoSimulacion);
 					cartelDirecion();
 					detenerAmbientacion();
 					 SonidoError();
@@ -293,6 +294,7 @@ public class Carrera extends JFrame {
 		metaOriginal=simu.getMeta();
 		estadoSimulacion.setPosicionInicial(simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo()))); // Guardar posición inicial
 		estadoSimulacion.setPosicionFinal(metaOriginal); // Guardar posición final
+		AnadirPosVisual();
 
 
 	}
@@ -458,6 +460,25 @@ public class Carrera extends JFrame {
 	    if (ambientacion != null) {
 	        ambientacion.close();
 	    }
+	}
+	
+	public void AnadirPosVisual() {
+		Iterator<ComponenteVertex> ie=verticesC.iterator();
+		int pos=0;
+		while(ie.hasNext()) {
+			ComponenteVertex v=ie.next();
+			if(pos!=metaOriginal) {
+				v.getBoton().setText(String.valueOf(pos));
+				v.getBoton().setFont(new Font("Segoe UI Black", Font.BOLD, 15));
+				v.getBoton().setForeground(Color.CYAN);
+				
+			}
+			else
+				v.getBoton().setIcon(new ImageIcon(Carrera.class.getResource("/recursos/pizza.png")));
+				
+				pos++;
+
+		}
 	}
 
 }
