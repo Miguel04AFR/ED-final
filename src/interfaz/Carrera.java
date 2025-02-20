@@ -139,16 +139,19 @@ public class Carrera extends JFrame {
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
+										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 										simu.registrarSimulacion(estadoSimulacion);
 									}
 								} else {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
+									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 									simu.registrarSimulacion(estadoSimulacion);
 								}
 							} else {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
+								estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 								simu.registrarSimulacion(estadoSimulacion);
 							}
 						}
@@ -159,6 +162,7 @@ public class Carrera extends JFrame {
 				}
 				else {
 					lblNewLabel.setText("El vertice de inicio no tiene camino");
+					estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 					simu.registrarSimulacion(estadoSimulacion);
 					cartelDirecion();
 					detenerAmbientacion();
@@ -203,6 +207,10 @@ public class Carrera extends JFrame {
 					}
 				}
 				layeredPane.repaint();
+				
+				// Restablecer el estado de simulación a sus valores por defecto
+		        estadoSimulacion.reset(); // Llamar al método reset
+		        
 				grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
 			}
 		});
