@@ -68,6 +68,7 @@ public class Carrera extends JFrame {
             public void windowClosing(WindowEvent e) {
                 simu.generarCSVAlCerrar(); // Llamar al método para generar CSV
                 super.windowClosing(e);
+                dispose();
             }
         });
 		
