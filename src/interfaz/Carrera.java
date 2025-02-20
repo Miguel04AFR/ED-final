@@ -149,7 +149,7 @@ public class Carrera extends JFrame {
 								lblNewLabel.setText("No hay camino posible para la meta");
 								if(simu.getRobot().VertexSituado(simu.getGrafo()).
 										equals(simu.getGrafo().getVerticesList().get(meta)) && simu.getMeta()!=metaOriginal ) {
-									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 									try {
 										simu.registrarSimulacion(estadoSimulacion);
 									} catch (CloneNotSupportedException e1) {
@@ -179,8 +179,8 @@ public class Carrera extends JFrame {
 										        .equals(simu.getGrafo().getVerticesList().get(simu.getMeta()))) {
 										    // El robot ha llegado al vértice más cercano (nueva meta)
 										
-										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
-										System.out.println(DistanciaCercanaYMeta(simu));
+										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
+										System.out.println(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 										    try {
 												simu.registrarSimulacion(estadoSimulacion);
 											} catch (CloneNotSupportedException e1) {
@@ -195,8 +195,8 @@ public class Carrera extends JFrame {
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
-										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
-										System.out.println(DistanciaCercanaYMeta(simu));
+										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
+										System.out.println(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 										try {
 											simu.registrarSimulacion(estadoSimulacion);
 										} catch (CloneNotSupportedException e1) {
@@ -208,8 +208,8 @@ public class Carrera extends JFrame {
 								} else {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
-									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
-									System.out.println(DistanciaCercanaYMeta(simu));
+									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
+									System.out.println(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 									try {
 										simu.registrarSimulacion(estadoSimulacion);
 									} catch (CloneNotSupportedException e1) {
@@ -221,8 +221,8 @@ public class Carrera extends JFrame {
 							} else {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
-								estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
-								System.out.println(DistanciaCercanaYMeta(simu));
+								estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
+								System.out.println(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 								try {
 									simu.registrarSimulacion(estadoSimulacion);
 								} catch (CloneNotSupportedException e1) {
@@ -241,7 +241,7 @@ public class Carrera extends JFrame {
 					
 					lblNewLabel.setText("El vertice no tiene camino");
 					if(unaVez) {
-						estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+						estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu,simu.getGrafo().getVerticesList().indexOf(simu.getRobot().VertexSituado(simu.getGrafo())),metaOriginal ));
 					    try {
 							simu.registrarSimulacion(estadoSimulacion);
 						} catch (CloneNotSupportedException e1) {
@@ -572,9 +572,9 @@ public class Carrera extends JFrame {
 		}
 	}
 	
-	public float DistanciaCercanaYMeta(Simulacion simu) {
-	    ComponenteVertex cercano = verticesC.get(simu.getMeta());
-	    ComponenteVertex meta = verticesC.get(metaOriginal);
+	public float DistanciaCercanaYMeta(Simulacion simu,int posRobot,int metaO) {
+	    ComponenteVertex cercano = verticesC.get(posRobot);
+	    ComponenteVertex meta = verticesC.get(metaO);
 	    
 	 // Validar que los vértices no sean nulos
 	    if (cercano == null || meta == null) {
@@ -582,10 +582,10 @@ public class Carrera extends JFrame {
 	    }
 
 	    // Obtener las coordenadas de los vértices
-	    int xCercano = cercano.getX();
-	    int yCercano = cercano.getY();
-	    int xMeta = meta.getX();
-	    int yMeta = meta.getY();
+	    int xCercano = cercano.getBoton().getX();
+	    int yCercano = cercano.getBoton().getY();
+	    int xMeta = meta.getBoton().getX();
+	    int yMeta = meta.getBoton().getY();
 
 	 // Imprimir coordenadas para depuración
 	    System.out.println("Coordenadas Cercano: (" + xCercano + ", " + yCercano + ")");
