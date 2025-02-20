@@ -245,8 +245,8 @@ public class Simulacion {
 	 
 		public void GenerarCSV(String ruta, List<EstadoSimulacion> simulaciones1) {
 		    // Lógica para generar el archivo CSV
-			// Ordenar las simulaciones por la cantidad de pasos de menor a mayor
-	        simulaciones1.sort(Comparator.comparingInt(EstadoSimulacion::getPasos));
+			/*// Ordenar las simulaciones por la cantidad de pasos de menor a mayor
+	        simulaciones1.sort(Comparator.comparingInt(EstadoSimulacion::getPasos));*/
 
 	        // Lógica para generar el archivo CSV
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
@@ -262,9 +262,8 @@ public class Simulacion {
 		
 		
 		public void GenerarCSVRegistro2(String ruta, List<EstadoSimulacion> simulaciones2) {
-	        // Ordenar las simulaciones por distancia faltante de menor a mayor
-	        simulaciones2.sort(Comparator.comparing(EstadoSimulacion::getDistancia));
-
+	        /*// Ordenar las simulaciones por distancia faltante de menor a mayor
+*/
 	        // Lógica para generar el archivo CSV
 	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
 	            writer.write("Posicion Inicial,Posicion Final,Distancia Faltante,Fecha\n");
