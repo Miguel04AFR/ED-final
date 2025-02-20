@@ -120,7 +120,7 @@ public class Carrera extends JFrame {
 									equals(simu.getGrafo().getVerticesList().get(meta))))) {
 								lblNewLabel.setText("No hay camino posible para la meta");
 								cartelDirecion();
-								simu.registrarSimulacion(estadoSimulacion);
+
 							}
 							// Buscamos el vértice más cercano accesible
 							Vertex camino = encontrarVerticeAccesibleMasCercanoAMeta(simu, verticesC);
@@ -479,6 +479,24 @@ public class Carrera extends JFrame {
 				pos++;
 
 		}
+	}
+	
+	public float DistanciaCercanaYMeta(Simulacion simu) {
+	    ComponenteVertex cercano = verticesC.get(simu.encontrarMeta());
+	    ComponenteVertex meta = verticesC.get(metaOriginal);
+
+	    // Obtener las coordenadas de los vértices
+	    int xCercano = cercano.getX();
+	    int yCercano = cercano.getY();
+	    int xMeta = meta.getX();
+	    int yMeta = meta.getY();
+
+	    // Calcular la distancia euclidiana
+	    double distancia = Math.sqrt(Math.pow(xMeta - xCercano, 2) + Math.pow(yMeta - yCercano, 2));
+
+	    // Convertir la distancia a entero y devolver
+	    return (float) distancia;
+	    
 	}
 
 }
