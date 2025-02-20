@@ -582,8 +582,15 @@ public class Carrera extends JFrame {
 	    int xMeta = meta.getX();
 	    int yMeta = meta.getY();
 
+	 // Imprimir coordenadas para depuración
+	    System.out.println("Coordenadas Cercano: (" + xCercano + ", " + yCercano + ")");
+	    System.out.println("Coordenadas Meta: (" + xMeta + ", " + yMeta + ")");
+	    
+	    
 	    // Calcular la distancia euclidiana
 	    double distancia = Math.sqrt(Math.pow(xMeta - xCercano, 2) + Math.pow(yMeta - yCercano, 2));
+	    
+	    System.out.println("Distancia calculada: " + distancia);
 
 	    // Convertir la distancia a entero y devolver
 	    return (float) distancia;
