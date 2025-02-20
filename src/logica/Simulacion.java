@@ -235,9 +235,13 @@ public class Simulacion {
 	//Reportes
 	
 	 public void generarCSVAlCerrar() {
+		 if(simulaciones1.size()>0) {
 	        GenerarCSV("recursos/Registro_1.csv", simulaciones1);
+		 }
+		 if(simulaciones2.size()>0) {
 	        GenerarCSVRegistro2("recursos/Registro_2.csv", simulaciones2);
 	    }
+	 }
 	 
 		public void GenerarCSV(String ruta, List<EstadoSimulacion> simulaciones1) {
 		    // Lógica para generar el archivo CSV
