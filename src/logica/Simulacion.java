@@ -34,6 +34,8 @@ public class Simulacion {
 	private ILinkedWeightedEdgeDirectedGraph grafo;
 	private Robot robot;
 	private int meta;
+	private List<EstadoSimulacion> simulaciones1 = new ArrayList<>(); // Simulaciones que llegan a la meta
+    private List<EstadoSimulacion> simulaciones2 = new ArrayList<>(); // Simulaciones que no llegan a la meta
 	
 	public Simulacion(ILinkedWeightedEdgeDirectedGraph grafo, Robot robot) {
 		setGrafo( grafo);
@@ -200,14 +202,9 @@ public class Simulacion {
 	        
 	        // Llamar a GenerarCSV para el archivo de simulaciones que llegaron a la meta
 	        if (es.getLlegoMeta()) {
-	        	List<EstadoSimulacion> simulaciones1 = new ArrayList<>();
-	            simulaciones1.add(es); // Agregar la simulación actual
-
-	            GenerarCSV("recursos/Registro_1.csv", simulaciones1); 
+	            simulaciones1.add(es); // Agregar la simulación actual 
 	        } else {
-	        	List<EstadoSimulacion> simulaciones2 = new ArrayList<>();
-	            simulaciones2.add(es); // Agregar la simulación actual
-	            GenerarCSVRegistro2("recursos/Registro_2.csv", simulaciones2); 
+	            simulaciones2.add(es); // Agregar la simulación actual 
 	        }
 	        
 	        // Leer el estado de la simulación desde el archivo para verificar
@@ -236,6 +233,12 @@ public class Simulacion {
 	}
 	
 	//Reportes
+	
+	 public void generarCSVAlCerrar() {
+	        GenerarCSV("recursos/Registro_1.csv", simulaciones1);
+	        GenerarCSVRegistro2("recursos/Registro_2.csv", simulaciones2);
+	    }
+	 
 		public void GenerarCSV(String ruta, List<EstadoSimulacion> simulaciones1) {
 		    // Lógica para generar el archivo CSV
 			// Ordenar las simulaciones por la cantidad de pasos de menor a mayor

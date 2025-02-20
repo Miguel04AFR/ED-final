@@ -26,6 +26,8 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.awt.event.ActionEvent;
@@ -54,13 +56,21 @@ public class Carrera extends JFrame {
 		edgesC = new  LinkedList<EdgeComponente>();
 
 		SonidoAmbientacion();
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 938, 649);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                simu.generarCSVAlCerrar(); // Llamar al método para generar CSV
+                super.windowClosing(e);
+            }
+        });
+		
 		JLayeredPane layeredPane = new JLayeredPane();
 		layeredPane.setBounds(0, 0, 922, 610);
 		contentPane.add(layeredPane);
@@ -128,6 +138,7 @@ public class Carrera extends JFrame {
 								lblNewLabel.setText("No hay camino posible para la meta");
 								if(simu.getRobot().VertexSituado(simu.getGrafo()).
 										equals(simu.getGrafo().getVerticesList().get(meta)) && simu.getMeta()!=metaOriginal ) {
+									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 									simu.registrarSimulacion(estadoSimulacion);
 								}
 									
@@ -151,6 +162,7 @@ public class Carrera extends JFrame {
 										if (simu.getRobot().VertexSituado(simu.getGrafo())
 										        .equals(simu.getGrafo().getVerticesList().get(simu.getMeta()))) {
 										    // El robot ha llegado al vértice más cercano (nueva meta)
+											estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 										    simu.registrarSimulacion(estadoSimulacion);
 										    lblNewLabel.setText("El robot ha llegado al vértice más cercano.");
 										    detenerAmbientacion();
@@ -160,18 +172,21 @@ public class Carrera extends JFrame {
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
+										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 										simu.registrarSimulacion(estadoSimulacion);
 										SonidoError();
 									}
 								} else {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
+									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 									simu.registrarSimulacion(estadoSimulacion);
 									SonidoError();
 								}
 							} else {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
+								estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
 								simu.registrarSimulacion(estadoSimulacion);
 								SonidoError();
 							}
@@ -185,8 +200,9 @@ public class Carrera extends JFrame {
 					
 					lblNewLabel.setText("El vertice no tiene camino");
 					if(unaVez) {
-					simu.registrarSimulacion(estadoSimulacion);
-					unaVez=false;
+						estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+					    simu.registrarSimulacion(estadoSimulacion);
+					    unaVez=false;
 					}
 					cartelDirecion();
 					detenerAmbientacion();
@@ -232,6 +248,7 @@ public class Carrera extends JFrame {
 					}
 				}
 				layeredPane.repaint();
+				estadoSimulacion.reset();
 				grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
 			}
 		});
