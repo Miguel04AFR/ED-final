@@ -42,6 +42,7 @@ public class Carrera extends JFrame {
 	private Player ambientacion;
 	int  metaOriginal;
 	private EstadoSimulacion estadoSimulacion;
+	boolean unaVez=true;
 	
 
 
@@ -113,12 +114,23 @@ public class Carrera extends JFrame {
 								simu.registrarSimulacion(estadoSimulacion);
 								
 							}
+							else {
+								if(simu.getRobot().VertexSituado(simu.getGrafo()).
+										equals(simu.getGrafo().getVerticesList().get(meta)) && simu.getMeta()!=metaOriginal ) {
+									simu.registrarSimulacion(estadoSimulacion);
+								}
+							}
 						
 						}
 						else {
 							if((!(simu.getRobot().VertexSituado(simu.getGrafo()).
 									equals(simu.getGrafo().getVerticesList().get(meta))))) {
 								lblNewLabel.setText("No hay camino posible para la meta");
+								if(simu.getRobot().VertexSituado(simu.getGrafo()).
+										equals(simu.getGrafo().getVerticesList().get(meta)) && simu.getMeta()!=metaOriginal ) {
+									simu.registrarSimulacion(estadoSimulacion);
+								}
+									
 								cartelDirecion();
 
 							}
@@ -136,20 +148,32 @@ public class Carrera extends JFrame {
 										estadoSimulacion.setPasos(estadoSimulacion.getPasos()+1); // Incrementar el contador de pasos
 										estadoSimulacion.getDirecciones().add(simu.getGrafo().getVerticesList().indexOf(nuevoV));
 										
+										if (simu.getRobot().VertexSituado(simu.getGrafo())
+										        .equals(simu.getGrafo().getVerticesList().get(simu.getMeta()))) {
+										    // El robot ha llegado al vértice más cercano (nueva meta)
+										    simu.registrarSimulacion(estadoSimulacion);
+										    lblNewLabel.setText("El robot ha llegado al vértice más cercano.");
+										    detenerAmbientacion();
+										    SonidoError();
+										}
+										
 									} else {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
 										simu.registrarSimulacion(estadoSimulacion);
+										SonidoError();
 									}
 								} else {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
 									simu.registrarSimulacion(estadoSimulacion);
+									SonidoError();
 								}
 							} else {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
 								simu.registrarSimulacion(estadoSimulacion);
+								SonidoError();
 							}
 						}
 
@@ -158,8 +182,12 @@ public class Carrera extends JFrame {
 
 				}
 				else {
-					lblNewLabel.setText("El vertice de inicio no tiene camino");
+					
+					lblNewLabel.setText("El vertice no tiene camino");
+					if(unaVez) {
 					simu.registrarSimulacion(estadoSimulacion);
+					unaVez=false;
+					}
 					cartelDirecion();
 					detenerAmbientacion();
 					 SonidoError();
@@ -190,6 +218,7 @@ public class Carrera extends JFrame {
 				verticesC.clear();
 				edgesC.clear();
 				simu.getGrafo().getVerticesList().clear();
+				unaVez=true;
 
 
 				// Limpiar solo los componentes de ComponenteVertex(ojo esto se enseña con un boton) y EdgeComponente
