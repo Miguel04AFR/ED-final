@@ -1,13 +1,21 @@
 package logica;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,6 +170,8 @@ public class Simulacion {
 	    this.meta = nuevoIndiceMeta;
 	}
 	
+	
+	//.dat
 	public void registrarSimulacion(EstadoSimulacion es) {
 	    try (RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw")) {
 	        // Crear encabezado si el archivo está vacío
@@ -188,6 +198,18 @@ public class Simulacion {
 	        raf.writeInt(estadoBytes.length); // Escribir longitud del estado
 	        raf.write(estadoBytes); // Escribir el estado
 	        
+	        // Llamar a GenerarCSV para el archivo de simulaciones que llegaron a la meta
+	        if (es.getLlegoMeta()) {
+	        	List<EstadoSimulacion> simulaciones1 = new ArrayList<>();
+	            simulaciones1.add(es); // Agregar la simulación actual
+
+	            GenerarCSV("recursos/Registro_1.csv", simulaciones1); 
+	        } else {
+	        	List<EstadoSimulacion> simulaciones2 = new ArrayList<>();
+	            simulaciones2.add(es); // Agregar la simulación actual
+	            GenerarCSVRegistro2("recursos/Registro_2.csv", simulaciones2); 
+	        }
+	        
 	        // Leer el estado de la simulación desde el archivo para verificar
 	        long position = raf.getFilePointer() - estadoBytes.length - 4; // Retroceder a la posición donde se escribió la simulación
 	        verificarSimulacionRegistrada(position, estadoBytes.length);
@@ -212,6 +234,48 @@ public class Simulacion {
 	        throw new RuntimeException("Error al verificar la simulación registrada", e);
 	    }
 	}
+	
+	//Reportes
+		public void GenerarCSV(String ruta, List<EstadoSimulacion> simulaciones1) {
+		    // Lógica para generar el archivo CSV
+			// Ordenar las simulaciones por la cantidad de pasos de menor a mayor
+	        simulaciones1.sort(Comparator.comparingInt(EstadoSimulacion::getPasos));
+
+	        // Lógica para generar el archivo CSV
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
+	            writer.write("Posicion Inicial,Posicion Final,Cantidad de Pasos,Fecha\n");
+	            for (EstadoSimulacion es : simulaciones1) {
+	                    writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getPasos() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	                    System.out.println("Bien");
+	            }
+	        } catch (IOException e) {
+	            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
+	        }
+	    }
+		
+		
+		public void GenerarCSVRegistro2(String ruta, List<EstadoSimulacion> simulaciones2) {
+	        // Ordenar las simulaciones por distancia faltante de menor a mayor
+	        simulaciones2.sort(Comparator.comparing(EstadoSimulacion::getDistancia));
+
+	        // Lógica para generar el archivo CSV
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
+	            writer.write("Posicion Inicial,Posicion Final,Distancia Faltante,Fecha\n");
+	            for (EstadoSimulacion es : simulaciones2) {
+	                    writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getDistancia() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	                    System.out.println("Bien");
+	            }
+	        } catch (IOException e) {
+	            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
+	        }
+		}
+
+
+
+
+		
+		
+		//Conversiones
 
 	
 	private byte[] convertEstadoSimulacionToBytes(EstadoSimulacion es) {
@@ -236,6 +300,34 @@ public class Simulacion {
     }
 	
 	
+	/*private EstadoSimulacion convertBytesToEstadoSimulacion(byte[] bytes) {
+	    EstadoSimulacion estado = new EstadoSimulacion();
+	    try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+	         DataInputStream dis = new DataInputStream(bais)) {
+	        
+	        // Leer los campos de EstadoSimulacion
+	        estado.setPasos(dis.readInt());
+	        
+	        // Leer la lista de direcciones
+	        int size = dis.readInt(); // Tamaño de la lista de direcciones
+	        ArrayList<Integer> direcciones = new ArrayList<>();
+	        for (int i = 0; i < size; i++) {
+	            direcciones.add(dis.readInt());
+	        }
+	        estado.setDirecciones(direcciones);
+	        
+	        // Leer el estado de llegoMeta
+	        estado.setLlegoMeta(dis.readBoolean());
+	        
+	        // Leer las posiciones inicial y final
+	        estado.setPosicionInicial(dis.readInt());
+	        estado.setPosicionFinal(dis.readInt());
+	        
+	    } catch (IOException e) {
+	        System.err.println("Error al convertir bytes a EstadoSimulacion: " + e.getMessage());
+	    }
+	    return estado;
+	}*/
 	
 	
 	

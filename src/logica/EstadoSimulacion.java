@@ -13,6 +13,7 @@ public class EstadoSimulacion implements Serializable{
 	private boolean llegoMeta;
 	private int posicionInicial;
 	private int posicionFinal;
+	private float distancia;
 	
 	public EstadoSimulacion() {
 		super();
@@ -21,6 +22,7 @@ public class EstadoSimulacion implements Serializable{
 		this.llegoMeta = false;
 		this.posicionInicial=-1;
 		this.posicionFinal=-1;
+		this.distancia=0;
 	}
 	public Integer getPosicionFinal() {
 		return posicionFinal;
@@ -52,6 +54,21 @@ public class EstadoSimulacion implements Serializable{
 	public void setPosicionInicial(Integer posicionInicial) {
 		this.posicionInicial = posicionInicial;
 	}
+	public float getDistancia() {
+		return distancia;
+	}
+	public void setDistancia(float distancia) {
+		this.distancia = distancia;
+	}
+	
+	public void reset() {
+        this.pasos = 0;
+        this.direcciones.clear(); // Limpiar la lista de direcciones
+        this.llegoMeta = false;
+        this.posicionInicial = -1;
+        this.posicionFinal = -1;
+        this.distancia = 0;
+    }
 
 	
 
