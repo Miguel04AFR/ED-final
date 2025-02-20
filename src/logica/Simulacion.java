@@ -245,15 +245,18 @@ public class Simulacion {
 	 
 		public void GenerarCSV(String ruta, List<EstadoSimulacion> simulaciones1) {
 		    // Lógica para generar el archivo CSV
-			/*// Ordenar las simulaciones por la cantidad de pasos de menor a mayor
-	        simulaciones1.sort(Comparator.comparingInt(EstadoSimulacion::getPasos));*/
+			// Ordenar las simulaciones por la cantidad de pasos de menor a mayor
+	        simulaciones1.sort(Comparator.comparingInt(EstadoSimulacion::getPasos));
 
 	        // Lógica para generar el archivo CSV
-	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
-	            writer.write("Posicion Inicial,Posicion Final,Cantidad de Pasos,Fecha\n");
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta, true))) { // Modo de adición
+	            // Si el archivo es nuevo, escribir el encabezado
+	            if (new File(ruta).length() == 0) {
+	                writer.write("Posicion Inicial,Posicion Final,Cantidad de Pasos,Fecha\n");
+	            }
 	            for (EstadoSimulacion es : simulaciones1) {
-	                    writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getPasos() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
-	                    System.out.println("Bien");
+	                writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getPasos() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	                System.out.println("Bien");
 	            }
 	        } catch (IOException e) {
 	            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
@@ -262,14 +265,18 @@ public class Simulacion {
 		
 		
 		public void GenerarCSVRegistro2(String ruta, List<EstadoSimulacion> simulaciones2) {
-	        /*// Ordenar las simulaciones por distancia faltante de menor a mayor
-*/
+	        // Ordenar las simulaciones por distancia faltante de menor a mayor
+	        simulaciones2.sort(Comparator.comparing(EstadoSimulacion::getDistancia));
+
 	        // Lógica para generar el archivo CSV
-	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
-	            writer.write("Posicion Inicial,Posicion Final,Distancia Faltante,Fecha\n");
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta, true))) { // Modo de adición
+	            // Si el archivo es nuevo, escribir el encabezado
+	            if (new File(ruta).length() == 0) {
+	                writer.write("Posicion Inicial,Posicion Final,Distancia Faltante,Fecha\n");
+	            }
 	            for (EstadoSimulacion es : simulaciones2) {
-	                    writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getDistancia() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
-	                    System.out.println("Bien");
+	                writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getDistancia() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	                System.out.println("Bien");
 	            }
 	        } catch (IOException e) {
 	            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
