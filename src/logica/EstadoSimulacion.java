@@ -3,7 +3,7 @@ package logica;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class EstadoSimulacion implements Serializable{
+public class EstadoSimulacion implements Serializable, Cloneable{
 	/**
 	 * 
 	 */
@@ -68,6 +68,11 @@ public class EstadoSimulacion implements Serializable{
         this.posicionInicial = -1;
         this.posicionFinal = -1;
         this.distancia = 0;
+    }
+	
+	@Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); // Clonación superficial
     }
 
 	
