@@ -125,7 +125,7 @@ public class Carrera extends JFrame {
 								try {
 									simu.registrarSimulacion(estadoSimulacion);
 								} catch (CloneNotSupportedException e1) {
-									// TODO Auto-generated catch block
+									
 									e1.printStackTrace();
 								}
 								
@@ -136,7 +136,7 @@ public class Carrera extends JFrame {
 									try {
 										simu.registrarSimulacion(estadoSimulacion);
 									} catch (CloneNotSupportedException e1) {
-										// TODO Auto-generated catch block
+										
 										e1.printStackTrace();
 									}
 								}
@@ -153,7 +153,7 @@ public class Carrera extends JFrame {
 									try {
 										simu.registrarSimulacion(estadoSimulacion);
 									} catch (CloneNotSupportedException e1) {
-										// TODO Auto-generated catch block
+										
 										e1.printStackTrace();
 									}
 								}
@@ -178,11 +178,13 @@ public class Carrera extends JFrame {
 										if (simu.getRobot().VertexSituado(simu.getGrafo())
 										        .equals(simu.getGrafo().getVerticesList().get(simu.getMeta()))) {
 										    // El robot ha llegado al vértice más cercano (nueva meta)
-											estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+										
+										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+										System.out.println(DistanciaCercanaYMeta(simu));
 										    try {
 												simu.registrarSimulacion(estadoSimulacion);
 											} catch (CloneNotSupportedException e1) {
-												// TODO Auto-generated catch block
+												
 												e1.printStackTrace();
 											}
 										    lblNewLabel.setText("El robot ha llegado al vértice más cercano.");
@@ -194,10 +196,11 @@ public class Carrera extends JFrame {
 										lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 										cartelDirecion();
 										estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+										System.out.println(DistanciaCercanaYMeta(simu));
 										try {
 											simu.registrarSimulacion(estadoSimulacion);
 										} catch (CloneNotSupportedException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 										SonidoError();
@@ -206,6 +209,7 @@ public class Carrera extends JFrame {
 									lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 									cartelDirecion();
 									estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+									System.out.println(DistanciaCercanaYMeta(simu));
 									try {
 										simu.registrarSimulacion(estadoSimulacion);
 									} catch (CloneNotSupportedException e1) {
@@ -218,6 +222,7 @@ public class Carrera extends JFrame {
 								lblNewLabel.setText("No hay camino para la meta,ni al vertice mas cercano");
 								cartelDirecion();
 								estadoSimulacion.setDistancia(DistanciaCercanaYMeta(simu));
+								System.out.println(DistanciaCercanaYMeta(simu));
 								try {
 									simu.registrarSimulacion(estadoSimulacion);
 								} catch (CloneNotSupportedException e1) {
