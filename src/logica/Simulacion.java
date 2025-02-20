@@ -213,7 +213,7 @@ public class Simulacion {
 	        verificarSimulacionRegistrada(position, estadoBytes.length);
 	        
 	        // Reiniciar el estado de la simulación actual para la próxima ejecución
-	        es.reset();
+	        /*es.reset();*/
 	    } catch (IOException e) {
 	        throw new RuntimeException(e); // Manejo de excepciones
 	    }
