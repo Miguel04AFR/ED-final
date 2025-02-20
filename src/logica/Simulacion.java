@@ -193,6 +193,8 @@ public class Simulacion {
 	        raf.seek(raf.getFilePointer() - 4); // Volver al contador
 	        raf.writeInt(count); // Escribir nuevo contador
 	        
+	        EstadoSimulacion clonedSimulation = (EstadoSimulacion)es.clone();
+	        
 	        // Convertir el objeto EstadoSimulacion a bytes
 	        byte[] estadoBytes = convertEstadoSimulacionToBytes(es);
 	        
@@ -200,17 +202,18 @@ public class Simulacion {
 	        raf.writeInt(estadoBytes.length); // Escribir longitud del estado
 	        raf.write(estadoBytes); // Escribir el estado
 	        
-	        // Llamar a GenerarCSV para el archivo de simulaciones que llegaron a la meta
-	        EstadoSimulacion clonedSimulation = (EstadoSimulacion)es.clone();
 	        if (clonedSimulation.getLlegoMeta()) {
-	            simulaciones1.add(clonedSimulation);
+	            simulaciones1.add(clonedSimulation); // Agregar la simulación actual
 	        } else {
-	            simulaciones2.add(clonedSimulation);
+	            simulaciones2.add(clonedSimulation); // Agregar la simulación actual
 	        }
 	        
 	        // Leer el estado de la simulación desde el archivo para verificar
 	        long position = raf.getFilePointer() - estadoBytes.length - 4; // Retroceder a la posición donde se escribió la simulación
 	        verificarSimulacionRegistrada(position, estadoBytes.length);
+	        
+	        // Reiniciar el estado de la simulación actual para la próxima ejecución
+	        es.reset();
 	    } catch (IOException e) {
 	        throw new RuntimeException(e); // Manejo de excepciones
 	    }

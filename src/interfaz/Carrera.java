@@ -249,7 +249,6 @@ public class Carrera extends JFrame {
 					}
 				}
 				layeredPane.repaint();
-				estadoSimulacion.reset();
 				grafoRandomC(simu, verticesC, layeredPane, edgesC,robot);
 			}
 		});
