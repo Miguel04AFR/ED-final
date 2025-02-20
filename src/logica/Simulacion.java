@@ -174,7 +174,7 @@ public class Simulacion {
 	
 	
 	//.dat
-	public void registrarSimulacion(EstadoSimulacion es) {
+	public void registrarSimulacion(EstadoSimulacion es) throws CloneNotSupportedException {
 	    try (RandomAccessFile raf = new RandomAccessFile("recursos/registro.dat", "rw")) {
 	        // Crear encabezado si el archivo está vacío
 	        if (raf.length() == 0) {
@@ -201,10 +201,11 @@ public class Simulacion {
 	        raf.write(estadoBytes); // Escribir el estado
 	        
 	        // Llamar a GenerarCSV para el archivo de simulaciones que llegaron a la meta
-	        if (es.getLlegoMeta()) {
-	            simulaciones1.add(es); // Agregar la simulación actual 
+	        EstadoSimulacion clonedSimulation = (EstadoSimulacion)es.clone();
+	        if (clonedSimulation.getLlegoMeta()) {
+	            simulaciones1.add(clonedSimulation);
 	        } else {
-	            simulaciones2.add(es); // Agregar la simulación actual 
+	            simulaciones2.add(clonedSimulation);
 	        }
 	        
 	        // Leer el estado de la simulación desde el archivo para verificar
