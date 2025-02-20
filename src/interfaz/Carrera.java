@@ -575,6 +575,11 @@ public class Carrera extends JFrame {
 	public float DistanciaCercanaYMeta(Simulacion simu) {
 	    ComponenteVertex cercano = verticesC.get(simu.encontrarMeta());
 	    ComponenteVertex meta = verticesC.get(metaOriginal);
+	    
+	 // Validar que los vértices no sean nulos
+	    if (cercano == null || meta == null) {
+	        throw new IllegalArgumentException("Uno de los vértices es nulo.");
+	    }
 
 	    // Obtener las coordenadas de los vértices
 	    int xCercano = cercano.getX();
@@ -582,8 +587,15 @@ public class Carrera extends JFrame {
 	    int xMeta = meta.getX();
 	    int yMeta = meta.getY();
 
+	 // Imprimir coordenadas para depuración
+	    System.out.println("Coordenadas Cercano: (" + xCercano + ", " + yCercano + ")");
+	    System.out.println("Coordenadas Meta: (" + xMeta + ", " + yMeta + ")");
+	    
+	    
 	    // Calcular la distancia euclidiana
 	    double distancia = Math.sqrt(Math.pow(xMeta - xCercano, 2) + Math.pow(yMeta - yCercano, 2));
+	    
+	    System.out.println("Distancia calculada: " + distancia);
 
 	    // Convertir la distancia a entero y devolver
 	    return (float) distancia;
