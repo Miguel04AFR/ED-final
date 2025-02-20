@@ -66,7 +66,7 @@ public class Carrera extends JFrame {
 		addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                simu.generarCSVAlCerrar(); // Llamar al método para generar CSV
+            	simu.ordenarCSV(); // Ordenar los CSV antes de cerrar
                 super.windowClosing(e);
                 dispose();
             }

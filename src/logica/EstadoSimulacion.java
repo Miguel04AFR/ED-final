@@ -70,10 +70,10 @@ public class EstadoSimulacion implements Serializable, Cloneable{
         this.distancia = 0;
     }
 	
-	/*@Override
+	@Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone(); // Clonación superficial
-    }*/
+    }
 
 	
 

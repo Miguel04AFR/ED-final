@@ -1,11 +1,13 @@
 package logica;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -204,16 +206,19 @@ public class Simulacion {
 	        
 	        if (clonedSimulation.getLlegoMeta()) {
 	            simulaciones1.add(clonedSimulation); // Agregar la simulación actual
+	            guardarEnCSV(clonedSimulation, "recursos/Registro_1.csv"); // Guardar en Registro_1
 	        } else {
 	            simulaciones2.add(clonedSimulation); // Agregar la simulación actual
+	            guardarEnCSV(clonedSimulation, "recursos/Registro_2.csv"); // Guardar en Registro_2
 	        }
+	        
 	        
 	        // Leer el estado de la simulación desde el archivo para verificar
 	        long position = raf.getFilePointer() - estadoBytes.length - 4; // Retroceder a la posición donde se escribió la simulación
 	        verificarSimulacionRegistrada(position, estadoBytes.length);
 	        
 	        // Reiniciar el estado de la simulación actual para la próxima ejecución
-	        /*es.reset();*/
+	        es.reset();
 	    } catch (IOException e) {
 	        throw new RuntimeException(e); // Manejo de excepciones
 	    }
@@ -238,7 +243,67 @@ public class Simulacion {
 	
 	//Reportes
 	
-	 public void generarCSVAlCerrar() {
+	private void guardarEnCSV(EstadoSimulacion es, String ruta) {
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta, true))) { // Modo de adición
+	        // Si el archivo es nuevo, escribir el encabezado
+	        if (new File(ruta).length() == 0) {
+	            if (ruta.equals("recursos/Registro_1.csv")) {
+	                writer.write("Posicion Inicial,Posicion Final,Cantidad de Pasos,Fecha\n");
+	            } else if (ruta.equals("recursos/Registro_2.csv")) {
+	                writer.write("Posicion Inicial,Posicion Final,Distancia Faltante,Fecha\n");
+	            }
+	        }
+	        // Escribir los datos en el CSV
+	        if (ruta.equals("recursos/Registro_1.csv")) {
+	            writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getPasos() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	        } else if (ruta.equals("recursos/Registro_2.csv")) {
+	            writer.write(es.getPosicionInicial() + "," + es.getPosicionFinal() + "," + es.getDistancia() + "," + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\n");
+	        }
+	    } catch (IOException e) {
+	        System.err.println("Error al escribir en el archivo CSV: " + e.getMessage());
+	    }
+	}
+	
+	public void ordenarCSV() {
+	    ordenarCSV("recursos/Registro_1.csv", true); // Ordenar por cantidad de pasos
+	    ordenarCSV("recursos/Registro_2.csv", false); // Ordenar por distancia faltante
+	}
+	
+	
+	private void ordenarCSV(String ruta, boolean ordenarPorPasos) {
+	    List<String> lineas = new ArrayList<>();
+	    try (BufferedReader reader = new BufferedReader(new FileReader(ruta))) {
+	        String linea;
+	        while ((linea = reader.readLine()) != null) {
+	            lineas.add(linea);
+	        }
+	    } catch (IOException e) {
+	        System.err.println("Error al leer el archivo CSV: " + e.getMessage());
+	    }
+
+	    // Separar el encabezado de los datos
+	    String header = lineas.get(0);
+	    List<String> datos = lineas.subList(1, lineas.size());
+
+	    // Ordenar los datos según el criterio especificado
+	    if (ordenarPorPasos) {
+	        datos.sort(Comparator.comparingInt(linea -> Integer.parseInt(linea.split(",")[2]))); // Ordenar por cantidad de pasos
+	    } else {
+	        datos.sort(Comparator.comparingDouble(linea -> Double.parseDouble(linea.split(",")[2]))); // Ordenar por distancia faltante
+	    }
+
+	    // Escribir de nuevo en el archivo CSV
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta))) {
+	        writer.write(header + "\n");
+	        for (String dato : datos) {
+	            writer.write(dato + "\n");
+	        }
+	    } catch (IOException e) {
+	        System.err.println("Error al escribir en el archivo CSV: " + e.getMessage());
+	    }
+	}
+	
+	/* public void generarCSVAlCerrar() {
 		 if(simulaciones1.size()>0) {
 	        GenerarCSV("recursos/Registro_1.csv", simulaciones1);
 		 }
@@ -285,7 +350,7 @@ public class Simulacion {
 	        } catch (IOException e) {
 	            System.err.println("Error al escribir el archivo CSV: " + e.getMessage());
 	        }
-		}
+		}*/
 
 
 
